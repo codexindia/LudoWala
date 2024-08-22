@@ -118,6 +118,7 @@ class AuthManager extends Controller
                     'status' => true,
                     'message' => 'OTP Verified  Successfully (new user)',
                     'token' => $token,
+                    'profileRequired' => true
                 ]);
             }
         } else {

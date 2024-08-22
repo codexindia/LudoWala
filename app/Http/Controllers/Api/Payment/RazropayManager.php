@@ -66,7 +66,13 @@ class RazropayManager extends Controller
         // Handle different event types
         switch ($payload['event']) {
             case 'payment.captured':
-               Log::info($payload);
+                Log::info($payload);
+                $orderId = $payload['payload']['payment']['entity']['order_id'];
+                $checkOldtrx = UserOrders::where('order_id',$orderId)->first();
+                if($checkOldtrx->status == "pending")
+                {
+                    creditBal($checkOldtrx->user_id,$checkOldtrx->amount,0,"deposit_wallet","Demo Desc");
+                }
                 break;
             case 'payment.failed':
                 Log::info($payload);
