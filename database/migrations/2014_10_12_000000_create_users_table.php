@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('mobileNumber');
             $table->decimal('deposit_wallet',10,2)->default(0);
-            $table->decimal('cashback_wallet',10,2)->default(0);
+            //$table->decimal('cashback_wallet',10,2)->default(0);
             $table->decimal('bonus_wallet',10,2)->default(0);
             $table->decimal('winning_wallet',10,2)->default(0);
             $table->timestamps();
