@@ -50,8 +50,7 @@ class RazropayManager extends Controller
     }
     public function RazorppaywebHookHander(Request $request)
     { 
-        Log::info($request->all());
-        return "hi";
+       
         $webhookSecret = config('services.razorpay.webhook_secret');
 
         $razorpaySignature = $request->header('X-Razorpay-Signature');
