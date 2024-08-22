@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthManager;
+use App\Http\Controllers\Api\ProfileManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,10 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->controller(AuthManager::class)->group(function () {
     Route::post('sendOTP', 'sendOTP');
     Route::post('loginOrSignup','loginOrSignup');
+});
+Route::middleware('auth:sanctum')->group(function(){
+    Route::prefix('profile')->controller(ProfileManager::class)->group(function () {
+        Route::post('getUser', 'getUser');
+        Route::post('profileUpdate', 'profileUpdate');
+    });  
 });

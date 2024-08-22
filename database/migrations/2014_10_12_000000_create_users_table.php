@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('fname')->nullable();
             $table->string('lname')->nullable();
+            $table->string('referCode')->unique()->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('mobileNumber');
             $table->timestamps();
