@@ -29,7 +29,7 @@ class ProfileManager extends Controller
             'email' => 'email',
         ]);
         $user = User::find($request->user()->id);
-        if ($user->fname == null && $user->lname == null && $user->referCode != null) {
+        if ($user->fname == null && $user->lname == null && $user->referCode == null) {
             if (strlen($request->fname) < 4) {
                 $referCode = Str::upper($request->fname . Str::password(4 - strlen($request->fname), true, false, false)) . Str::of($user->mobileNumber)->substr(5);
             } else {
