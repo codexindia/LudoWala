@@ -71,8 +71,12 @@ class RazropayManager extends Controller
                 $checkOldtrx = UserOrders::where('order_id',$orderId)->first();
                 if($checkOldtrx->status == "pending")
                 {
-                    creditBal($checkOldtrx->user_id,$checkOldtrx->amount,0,"deposit_wallet","Demo Desc");
+                    creditBal($checkOldtrx->user_id,$checkOldtrx->amount,0,"deposit_wallet","Amount Deposit Through Online Gateway");
                 }
+                $checkOldtrx->update([
+                 'status' => 'success',
+                 'webhookResp' => $payload
+                ]);
                 break;
             case 'payment.failed':
                 Log::info($payload);

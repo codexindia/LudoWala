@@ -28,6 +28,6 @@ Route::middleware('auth:sanctum')->group(function(){
     });  
     Route::prefix('wallet')->controller(RazropayManager::class)->group(function () {
         Route::post('deposit', 'depositAmount');
-        Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander');
+        Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander')->withoutMiddleware('auth:sanctum');
     });  
 });

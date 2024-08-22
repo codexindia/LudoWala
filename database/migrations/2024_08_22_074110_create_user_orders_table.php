@@ -24,6 +24,7 @@ return new class extends Migration
             // $table->string('subscription_id')->nullable();
             $table->string('payment_id')->nullable();
             $table->string('status')->default('pending');
+            $table->text('webhookResp')->nullable();
             $table->timestamps();
         });
     }
