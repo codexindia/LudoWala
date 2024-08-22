@@ -16,18 +16,22 @@ class AuthManager extends Controller
         $request->validate([
             'mobileNumber' => 'required|digits:10|numeric'
         ]);
-        if($status = $this->generateOTP($request->mobileNumber)){
+        $status = $this->generateOTP($request->mobileNumber);
+        if ($status == 1) {
             return response()->json([
                 'status' => true,
+                'message' => 'Message Has Been Sent Successfully',
+            ]);
+        }else{
+            return response()->json([
+                'status' => false,
                 'message' => $status,
             ]);
         }
-       
     }
     #genarate new otp function
     private function generateOTP($number)
     {
-
         $checkotp = VerficationCodes::where('phone', $number)->latest()->first();
         $now = Carbon::now();
         if ($checkotp && $now->isBefore($checkotp->expire_at)) {
@@ -50,12 +54,11 @@ class AuthManager extends Controller
                 "numbers" => $number,
             ]);
             $decode = json_decode($response);
-            
-            if($decode->message == "Message sent successfully")
-            {
+
+            if ($response->ok()) {
                 return 1;
-            }else{
-              return $decode->message;
+            } else {
+                return $decode->message;
             }
         } catch (\Exception $e) {
             return $e->getMessage();
