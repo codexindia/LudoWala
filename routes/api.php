@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthManager;
+use App\Http\Controllers\Api\Payment\RazropayManager;
 use App\Http\Controllers\Api\ProfileManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,5 +25,9 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::prefix('profile')->controller(ProfileManager::class)->group(function () {
         Route::post('getUser', 'getUser');
         Route::post('profileUpdate', 'profileUpdate');
+    });  
+    Route::prefix('wallet')->controller(RazropayManager::class)->group(function () {
+        Route::post('deposit', 'depositAmount');
+        Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander');
     });  
 });
