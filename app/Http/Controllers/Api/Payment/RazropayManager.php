@@ -34,7 +34,7 @@ class RazropayManager extends Controller
             $neworder->save();
             return response()->json([
                 // 'order_id' => $neworder->order_id,
-                'status' => false,
+                'status' => true,
                 'razorpay_order_id' => $razorpayOrder['id'],
                 'amount' => $neworder->amount,
                 'currency' => 'INR',
