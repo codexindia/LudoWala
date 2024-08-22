@@ -106,6 +106,7 @@ class AuthManager extends Controller
                     'status' => true,
                     'message' => 'OTP Verified  Successfully (Login)',
                     'token' => $token,
+                    'profileRequired' => $checkphone->fname ==  null || $checkphone->lname == null ? true : false
                 ]);
             } else {
                 
