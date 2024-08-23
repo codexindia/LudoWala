@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthManager;
 use App\Http\Controllers\Api\Payment\RazropayManager;
 use App\Http\Controllers\Api\ProfileManager;
+use App\Http\Controllers\Api\TournamentManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,9 @@ Route::middleware('chkmaintenince')->group(function () {
         Route::prefix('wallet')->controller(RazropayManager::class)->group(function () {
             Route::post('deposit', 'depositAmount');
             Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander')->withoutMiddleware(['auth:sanctum', 'chkmaintenince']);
+        });
+        Route::prefix('tournament')->controller(TournamentManager::class)->group(function(){
+           Route::post('getTournamentList', 'getTournamentList');
         });
     });
     
