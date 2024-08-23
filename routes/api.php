@@ -17,17 +17,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('auth')->controller(AuthManager::class)->group(function () {
-    Route::post('sendOTP', 'sendOTP');
-    Route::post('loginOrSignup','loginOrSignup');
-});
-Route::middleware('auth:sanctum')->group(function(){
-    Route::prefix('profile')->controller(ProfileManager::class)->group(function () {
-        Route::post('getUser', 'getUser');
-        Route::post('profileUpdate', 'profileUpdate');
-    });  
-    Route::prefix('wallet')->controller(RazropayManager::class)->group(function () {
-        Route::post('deposit', 'depositAmount');
-        Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander')->withoutMiddleware('auth:sanctum');
-    });  
+Route::middleware('chkmaintenince')->group(function () {
+
+    Route::prefix('auth')->controller(AuthManager::class)->group(function () {
+        Route::post('sendOTP', 'sendOTP');
+        Route::post('loginOrSignup', 'loginOrSignup');
+    });
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('profile')->controller(ProfileManager::class)->group(function () {
+            Route::post('getUser', 'getUser');
+            Route::post('profileUpdate', 'profileUpdate');
+        });
+        Route::prefix('wallet')->controller(RazropayManager::class)->group(function () {
+            Route::post('deposit', 'depositAmount');
+            Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander')->withoutMiddleware(['auth:sanctum', 'chkmaintenince']);
+        });
+    });
+    
 });

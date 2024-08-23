@@ -17,5 +17,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/add', function () {
-  return creditBal(1,5,0,"deposit_wallet","Demo Desc");
+  return get_setting('maintenance');
 });

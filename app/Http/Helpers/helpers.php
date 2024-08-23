@@ -3,7 +3,13 @@
 use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
-
+use App\Settings\SettingName;
+if (!function_exists('get_setting')) {
+    function get_setting($key, $group = 'general')
+    {
+      return app(SettingName::class)->$key;
+    }
+}
 function getTrx($length = 12)
 {
     $characters       = 'ABCDEFGHJKMNOPQRSTUVWXYZ123456789';
