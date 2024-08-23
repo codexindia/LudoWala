@@ -37,18 +37,17 @@ class ProfileManager extends Controller
                 $referCode = Str::upper(Str::of($request->fname)->substr(0, 4)) . Str::of($user->mobileNumber)->substr(5);
             }
             $user->referCode = $referCode;
-          
         }
-        if ($request->has('referCode') && $user->refBy==null) {
-          
-            $mainUser = User::where('referCode',$request->referCode)->first();
-            if($mainUser != null)
-            $user->refBy = $mainUser->id;
-        else
-        return response()->json([
-            'status' => false,
-            'message' => 'Please Enter a Valid Refer Code',
-        ]);
+        if ($request->has('referCode') && $user->refBy == null) {
+
+            $mainUser = User::where('referCode', $request->referCode)->first();
+            if ($mainUser != null)
+                $user->refBy = $mainUser->id;
+            else
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Please Enter a Valid Refer Code',
+                ]);
         }
         $user->fname = $request->fname;
         $user->lname = $request->lname;
