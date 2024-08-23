@@ -49,8 +49,8 @@ class RazropayManager extends Controller
         }
     }
     public function RazorppaywebHookHander(Request $request)
-    { 
-       
+    {
+
         $webhookSecret = config('services.razorpay.webhook_secret');
 
         $razorpaySignature = $request->header('X-Razorpay-Signature');
@@ -71,16 +71,15 @@ class RazropayManager extends Controller
                 Log::info($payload);
                 $orderId = $payload['payload']['payment']['entity']['order_id'];
                 $paymentId = $payload['payload']['payment']['entity']['id'];
-                $checkOldtrx = UserOrders::where('order_id',$orderId)->first();
-                if($checkOldtrx->status == "pending")
-                {
-                    creditBal($checkOldtrx->refBy,$checkOldtrx->amount*0.02,0,"deposit_wallet","Received Referral Commission From ".$checkOldtrx->fullname);
-                    creditBal($checkOldtrx->user_id,$checkOldtrx->amount,0,"deposit_wallet","Amount Deposit Through Online Gateway");
+                $checkOldtrx = UserOrders::where('order_id', $orderId)->first();
+                if ($checkOldtrx->status == "pending") {
+                 //   creditBal($checkOldtrx->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$checkOldtrx->fullname}");
+                    creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway");
                 }
                 $checkOldtrx->update([
                     'payment_id' => $paymentId,
-                 'status' => 'success',
-                 'webhookResp' => $payload
+                    'status' => 'success',
+                    'webhookResp' => $payload
                 ]);
                 break;
             case 'payment.failed':
