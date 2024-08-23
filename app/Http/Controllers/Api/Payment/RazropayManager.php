@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Razorpay\Api\Api as Razorpay;
 use Razorpay\Api\Errors\SignatureVerificationError;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class RazropayManager extends Controller
 {
@@ -72,8 +73,11 @@ class RazropayManager extends Controller
                 $orderId = $payload['payload']['payment']['entity']['order_id'];
                 $paymentId = $payload['payload']['payment']['entity']['id'];
                 $checkOldtrx = UserOrders::where('order_id', $orderId)->first();
+                $user = User::find($checkOldtrx->user_id);
                 if ($checkOldtrx->status == "pending") {
-                 //   creditBal($checkOldtrx->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$checkOldtrx->fullname}");
+                    if ($user->refBy != null) {
+                        creditBal($user->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$user->fullname}");
+                    }
                     creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway");
                 }
                 $checkOldtrx->update([
