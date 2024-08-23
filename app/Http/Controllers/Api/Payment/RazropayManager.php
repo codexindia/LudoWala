@@ -74,6 +74,7 @@ class RazropayManager extends Controller
                 $checkOldtrx = UserOrders::where('order_id',$orderId)->first();
                 if($checkOldtrx->status == "pending")
                 {
+                    creditBal($checkOldtrx->refBy,$checkOldtrx->amount*0.02,0,"deposit_wallet","Received Referral Commission From ".$checkOldtrx->fullname);
                     creditBal($checkOldtrx->user_id,$checkOldtrx->amount,0,"deposit_wallet","Amount Deposit Through Online Gateway");
                 }
                 $checkOldtrx->update([

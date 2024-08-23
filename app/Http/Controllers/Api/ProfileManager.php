@@ -27,6 +27,7 @@ class ProfileManager extends Controller
             'fname' => 'required|min:2|max:15',
             'lname' => 'required|min:2|max:15',
             'email' => 'email',
+            'referCode' => 'min:9|max:9|exists:users,referCode'
         ]);
         $user = User::find($request->user()->id);
         if ($user->fname == null && $user->lname == null && $user->referCode == null) {
@@ -36,6 +37,13 @@ class ProfileManager extends Controller
                 $referCode = Str::upper(Str::of($request->fname)->substr(0, 4)) . Str::of($user->mobileNumber)->substr(5);
             }
             $user->referCode = $referCode;
+          
+        }
+        if ($request->has('referCode') && $user->refBy==null) {
+            $mainUser = User::where('referCode',$request->referCode)->first();
+           
+            
+            $user->refBy = $mainUser->id;
         }
         $user->fname = $request->fname;
         $user->lname = $request->lname;

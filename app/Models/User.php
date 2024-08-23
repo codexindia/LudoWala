@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Database\Eloquent\Casts\Attribute;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -32,7 +32,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
+    public function fullname(): Attribute
+    {
+        return new Attribute(
+            get:fn() => $this->fname . ' ' . $this->lname,
+        );
+    }
     /**
      * The attributes that should be cast.
      *
