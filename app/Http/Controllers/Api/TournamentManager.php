@@ -12,7 +12,7 @@ class TournamentManager extends Controller
     {
         $userId = $request->user()->id;
         $tournament = Tournaments::withCount('participants')
-        ->withExists(['participants as user_joined' => function ($query) use ($userId) {
+        ->withExists(['participants as userJoined' => function ($query) use ($userId) {
             $query->where('userId', $userId);
         }])->get();
         return response()->json([
