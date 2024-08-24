@@ -10,7 +10,7 @@ class TournamentManager extends Controller
 {
    public function getTournamentList(Request $request)
    {
-    $tournament = Tournaments::orderBy('id','desc')->get();
+    $tournament = Tournaments::withCount('participants')->get();
     return response()->json([
         'status' => true,
         'data' => $tournament,
