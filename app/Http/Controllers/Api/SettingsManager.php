@@ -13,7 +13,7 @@ class SettingsManager extends Controller
         return response()->json([
             'status' => true,
             'forceUpdate' => get_setting('forceUpdate'),
-            'apkVersion' => get_setting('apkVersion'),
+            'apkVersion' =>get_setting('apkVersion'),
         ]);
     }
 }
