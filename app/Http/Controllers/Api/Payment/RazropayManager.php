@@ -20,7 +20,7 @@ class RazropayManager extends Controller
         $neworder = new UserOrders;
         $neworder->user_id = $request->user()->id;
         $neworder->amount = $request->amount;
-        $neworder->description = 'Amount Deposit Through Online Gateway';
+
         $neworder->type = 'payment';
 
         $api = new Razorpay(config('services.razorpay.key'), config('services.razorpay.secret'));
@@ -31,6 +31,7 @@ class RazropayManager extends Controller
                 'currency' => 'INR',
                 'receipt' => $neworder->id,
             ]);
+            $neworder->description = 'Amount Deposit Through Online Gateway Payment id ' . $razorpayOrder['id'];
             $neworder->order_id = $razorpayOrder['id'];
             $neworder->save();
             return response()->json([
