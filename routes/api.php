@@ -36,10 +36,12 @@ Route::middleware('chkmaintenince')->group(function () {
         });
         Route::prefix('tournament')->controller(TournamentManager::class)->group(function(){
            Route::post('getTournamentList', 'getTournamentList');
+           Route::post('joinTournament', 'joinTournament');
         });
         Route::prefix('settings')->controller(SettingsManager::class)->group(function(){
             Route::post('getSetting', 'getSetting')->withoutMiddleware(['auth:sanctum']);
          });
+         
     });
     
 });

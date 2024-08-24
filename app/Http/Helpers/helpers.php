@@ -44,3 +44,27 @@ function creditBal($userId, $amount, $charge = 0, $walletType = 'deposit_wallet'
         return false;
     };
 }
+function debitBal($userId, $amount, $charge = 0, $walletType = 'deposit_wallet', $description = null)
+{
+    DB::beginTransaction();
+
+    try {
+
+        $newtrx = new Transaction;
+        $newtrx->userId = $userId;
+        $newtrx->amount = $amount;
+        $newtrx->charge = $charge;
+        $newtrx->trxType = '-';
+        $newtrx->trx = getTrx();
+        $newtrx->description = $description;
+        $newtrx->walletType = $walletType;
+        $newtrx->save();
+        User::find($userId)->decrement($walletType, $amount);
+        DB::commit();
+        return 1;
+    } catch (Exception $e) {
+       // return $e->getMessage();
+       // DB::rollBack();
+        return false;
+    };
+}
