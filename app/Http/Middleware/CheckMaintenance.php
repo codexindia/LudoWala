@@ -21,7 +21,7 @@ class CheckMaintenance
             'status' => true,
             'maintenance' => true,
             'message' => 'System Under Maintenance We Will Available Soon'
-            ]);
+            ],503);
         }
         return $next($request);
     }

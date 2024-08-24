@@ -30,14 +30,14 @@ return new class extends Migration
             $table->string('4thPrize');
             //$table->boolean('is_active')->default(true);
             $table->integer('1stRoundBonus')->default(0);
-            $table->integer('2ndRoundBonus')->default(0);
-            $table->integer('3rdRoundBonus')->default(0);
-            $table->integer('4thRoundBonus')->default(0);
-            $table->integer('5thRoundBonus')->default(0);
-            $table->integer('6thRoundBonus')->default(0);
-            $table->integer('7thRoundBonus')->default(0);
-            $table->integer('8thRoundBonus')->default(0);
-            $table->integer('9thRoundBonus')->default(0);
+            $table->integer('2ndRoundWinning')->default(0);
+            $table->integer('3rdRoundWinning')->default(0);
+            $table->integer('4thRoundWinning')->default(0);
+            $table->integer('5thRoundWinning')->default(0);
+            $table->integer('6thRoundWinning')->default(0);
+            $table->integer('7thRoundWinning')->default(0);
+            $table->integer('8thRoundWinning')->default(0);
+            $table->integer('9thRoundWinning')->default(0);
 
           
             $table->timestamps();
