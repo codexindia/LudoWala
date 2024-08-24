@@ -20,7 +20,7 @@ class RazropayManager extends Controller
         $neworder = new UserOrders;
         $neworder->user_id = $request->user()->id;
         $neworder->amount = $request->amount;
-
+        $neworder->description = 'Amount Deposit Through Online Gateway';
         $neworder->type = 'payment';
 
         $api = new Razorpay(config('services.razorpay.key'), config('services.razorpay.secret'));
@@ -31,7 +31,6 @@ class RazropayManager extends Controller
                 'currency' => 'INR',
                 'receipt' => $neworder->id,
             ]);
-            $neworder->description = 'Amount Deposit Through Online Gateway Payment id ' . $razorpayOrder['id'];
             $neworder->order_id = $razorpayOrder['id'];
             $neworder->save();
             return response()->json([
@@ -79,7 +78,7 @@ class RazropayManager extends Controller
                     if ($user->refBy != null) {
                         creditBal($user->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$user->fullname}");
                     }
-                    creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway");
+                    creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway Payment Id: {$paymentId}");
                 }
                 $checkOldtrx->update([
                     'payment_id' => $paymentId,
