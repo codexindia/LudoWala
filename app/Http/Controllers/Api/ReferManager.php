@@ -37,7 +37,7 @@ class ReferManager extends Controller
         $userId = $request->user()->id;
         $referrals = User::select('users.fname', 'users.lname', DB::raw('(SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE walletType = "winning_wallet" AND userId = users.id) as total_winning'),DB::raw('ROW_NUMBER() OVER (ORDER BY total_winning DESC) as rank'))
             ->where('refBy', $userId)
-            ->orderBy('users.id')
+            ->orderBy('total_winning', 'DESC')
             ->paginate(10);
 
         $referrals->transform(function ($item) {
