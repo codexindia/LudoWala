@@ -25,6 +25,7 @@ class ReferManager extends Controller
             ->orderByDesc('rc.referral_count')
             ->orderBy('users.id')
             ->limit(10)
+            ->distinct()
             ->get();
 
         $leaderboard->transform(function ($item) {
