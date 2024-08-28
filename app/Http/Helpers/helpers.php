@@ -39,7 +39,7 @@ function creditBal($userId,$amount, $charge = 0, $walletType = 'deposit_wallet',
         DB::commit();
         return 1;
     } catch (Exception $e) {
-        return $e->getMessage();
+      //  return $e->getMessage();
         DB::rollBack();
         return false;
     };

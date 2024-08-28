@@ -114,7 +114,7 @@ class AuthManager extends Controller
                 $newuser->mobileNumber = $request->mobileNumber;
                // $newuser->referCode = $referCode;
                 $newuser->save();
-               return creditBal($newuser->id, 100, 0, 'bonus_wallet', "Welcome Bonus Credited");
+                creditBal($newuser->id, 100, 0, 'bonus_wallet', "Welcome Bonus Credited");
           
                 $token = $newuser->createToken('auth_token')->plainTextToken;
                 return response()->json([
