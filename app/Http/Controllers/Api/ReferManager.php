@@ -41,6 +41,7 @@ class ReferManager extends Controller
             ->paginate(10);
 
         $referrals->transform(function ($item) {
+            $item->profilePic = "https://api.dicebear.com/9.x/micah/svg?seed=".$item->fname.'+'.$item->lname;
           //  $item->rank = $item->getRank();
             return $item;
         });
