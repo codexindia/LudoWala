@@ -20,7 +20,7 @@ function getTrx($length = 12)
     }
     return $randomString;
 }
-function creditBal($userId, $amount, $charge = 0, $walletType = 'deposit_wallet', $description = null)
+function creditBal($userId,$amount, $charge = 0, $walletType = 'deposit_wallet', $description = null)
 {
     DB::beginTransaction();
 
