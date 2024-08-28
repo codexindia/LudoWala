@@ -12,7 +12,7 @@ class ReferManager extends Controller
 {
     public function leaderBoard(Request $request)
     {
-        $leaderboard = User::select('users.id as userId','users.fname','users.lname', DB::raw('(SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE walletType = "deposit_wallet" AND userId = ref.id AND remark = "fund_added") as total_deposit'), DB::raw('ROW_NUMBER() OVER (ORDER BY referral_count DESC) as rank'))
+        $leaderboard = User::select('users.id as userId','users.fname','users.lname', DB::raw('(SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE walletType = "deposit_wallet" AND userId = ref.id AND remark = "fund_added") as total_deposit'))// DB::raw('ROW_NUMBER() OVER (ORDER BY referral_count DESC) as rank'))
             ->leftJoin('users as ref', 'users.id', '=', 'ref.refBy')
             ->leftJoin(DB::raw("(SELECT refBy, COUNT(*) as referral_count FROM users WHERE refBy IS NOT NULL GROUP BY refBy) as rc"), 'users.id', '=', 'rc.refBy')
             ->orderByDesc('referral_count')
