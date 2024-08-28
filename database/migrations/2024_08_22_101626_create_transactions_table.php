@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('trx');
             $table->string('description')->nullable();
             $table->string('remark')->nullable();
-            $table->enum('walletType',['deposit_wallet']);
+            $table->enum('walletType',['deposit_wallet','bonus_wallet','winning_wallet']);
             $table->timestamps();
         });
     }

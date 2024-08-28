@@ -39,8 +39,8 @@ function creditBal($userId, $amount, $charge = 0, $walletType = 'deposit_wallet'
         DB::commit();
         return 1;
     } catch (Exception $e) {
-        return $e->getMessage();
-       // DB::rollBack();
+       // return $e->getMessage();
+        DB::rollBack();
         return false;
     };
 }
@@ -64,7 +64,7 @@ function debitBal($userId, $amount, $charge = 0, $walletType = 'deposit_wallet',
         return 1;
     } catch (Exception $e) {
        // return $e->getMessage();
-       // DB::rollBack();
+        DB::rollBack();
         return false;
     };
 }
