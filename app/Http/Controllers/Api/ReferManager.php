@@ -42,7 +42,7 @@ class ReferManager extends Controller
                     ->where('walletType', 'winning_wallet')
                     ->whereColumn('userId', 'users.id');
             }, 'total_winning')
-            ->selectRaw('(@row_number:=@row_number + 1) as rank')
+            //->selectRaw('(@row_number:=@row_number + 1) as rank')
             ->where('refBy', $userId)
             ->orderBy('total_winning', 'DESC')
             ->paginate(10);
