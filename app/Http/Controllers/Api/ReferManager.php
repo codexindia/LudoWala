@@ -31,7 +31,7 @@ class ReferManager extends Controller
         $leaderboard->transform(function ($item) {
            
             $item->total_deposit ??= 0;
-            $item->profilePic = "https://api.dicebear.com/9.x/micah/png?backgroundColor=b6e3f4,c0aede,d1d4&seed=".$item->fname.'+'.$item->lname;
+            $item->profilePic = "https://api.dicebear.com/9.x/micah/png?backgroundColor=#b6e3f4,#c0aede,#d1d4&seed=".$item->fname.'+'.$item->lname;
             return $item;
         });
 
