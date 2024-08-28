@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthManager;
 use App\Http\Controllers\Api\Payment\RazropayManager;
 use App\Http\Controllers\Api\ProfileManager;
+use App\Http\Controllers\Api\ReferManager;
 use App\Http\Controllers\Api\SettingsManager;
 use App\Http\Controllers\Api\TournamentManager;
 use Illuminate\Http\Request;
@@ -41,7 +42,9 @@ Route::middleware('chkmaintenince')->group(function () {
         Route::prefix('settings')->controller(SettingsManager::class)->group(function(){
             Route::post('getSetting', 'getSetting')->withoutMiddleware(['auth:sanctum','chkmaintenince']);
          });
-         
+         Route::prefix('refer')->controller(ReferManager::class)->group(function(){
+            Route::post('leaderBoard', 'leaderBoard');
+         });
     });
     
 });

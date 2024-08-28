@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class ProfileManager extends Controller
 {
@@ -58,4 +59,5 @@ class ProfileManager extends Controller
             'message' => 'profile update done',
         ]);
     }
+  
 }

@@ -78,7 +78,7 @@ class RazropayManager extends Controller
                     if ($user->refBy != null) {
                         creditBal($user->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$user->fullname}",'referral_commission');
                     }
-                    creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway Payment Id: {$paymentId}");
+                    creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway Payment Id: {$paymentId}",'fund_added');
                 }
                 $checkOldtrx->update([
                     'payment_id' => $paymentId,
