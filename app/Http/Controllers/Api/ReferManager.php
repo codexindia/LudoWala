@@ -22,9 +22,8 @@ class ReferManager extends Controller
             }, 'total_deposit')
             ->leftJoin('users as ref', 'users.id', '=', 'ref.refBy')
             ->leftJoin(DB::raw("(SELECT refBy, COUNT(*) as referral_count FROM users WHERE refBy IS NOT NULL GROUP BY refBy) as rc"), 'users.id', '=', 'rc.refBy')
-            ->orderByDesc('referral_count')
+            ->orderByDesc('rc.referral_count')
             ->orderBy('users.id')
-            ->distinct()
             ->limit(10)
             ->get();
 
