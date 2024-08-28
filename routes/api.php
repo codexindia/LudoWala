@@ -39,7 +39,7 @@ Route::middleware('chkmaintenince')->group(function () {
            Route::post('joinTournament', 'joinTournament');
         });
         Route::prefix('settings')->controller(SettingsManager::class)->group(function(){
-            Route::post('getSetting', 'getSetting')->withoutMiddleware(['auth:sanctum']);
+            Route::post('getSetting', 'getSetting')->withoutMiddleware(['auth:sanctum','chkmaintenince']);
          });
          
     });
