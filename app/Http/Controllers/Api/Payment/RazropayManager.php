@@ -76,7 +76,7 @@ class RazropayManager extends Controller
                 $user = User::find($checkOldtrx->user_id);
                 if ($checkOldtrx->status == "pending") {
                     if ($user->refBy != null) {
-                        creditBal($user->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$user->fullname}");
+                        creditBal($user->refBy, $checkOldtrx->amount * 0.02, 0, "deposit_wallet", "Received Referral Commission From {$user->fullname}",'referral_commission');
                     }
                     creditBal($checkOldtrx->user_id, $checkOldtrx->amount, 0, "deposit_wallet", "Amount Deposit Through Online Gateway Payment Id: {$paymentId}");
                 }

@@ -20,7 +20,7 @@ function getTrx($length = 12)
     }
     return $randomString;
 }
-function creditBal($userId,$amount, $charge = 0, $walletType = 'deposit_wallet', $description = null)
+function creditBal($userId,$amount, $charge = 0, $walletType = 'deposit_wallet', $description = null,$remark = null)
 {
     DB::beginTransaction();
 
@@ -31,6 +31,7 @@ function creditBal($userId,$amount, $charge = 0, $walletType = 'deposit_wallet',
         $newtrx->amount = $amount;
         $newtrx->charge = $charge;
         $newtrx->trxType = '+';
+        $newtrx->remark = $remark;
         $newtrx->trx = getTrx();
         $newtrx->description = $description;
         $newtrx->walletType = $walletType;
