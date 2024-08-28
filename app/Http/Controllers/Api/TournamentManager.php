@@ -12,9 +12,9 @@ class TournamentManager extends Controller
     {
         $userId = $request->user()->id;
         $tournament = Tournaments::withCount('participants')
-        ->withExists(['participants as userJoined' => function ($query) use ($userId) {
-            $query->where('userId', $userId);
-        }])->get();
+            ->withExists(['participants as userJoined' => function ($query) use ($userId) {
+                $query->where('userId', $userId);
+            }])->get();
         return response()->json([
             'status' => true,
             'data' => $tournament,
@@ -42,7 +42,14 @@ class TournamentManager extends Controller
                     'message' => 'Insufficient balance',
                 ]);
             }
-            debitBal($request->user()->id, $tournament->entryFee, 0, 'deposit_wallet', 'Tournament Entry Fee');
+            $bonusCutAmount =  $tournament->entryFee * 0.02;
+            if ($request->user()->bonus_wallet > $bonusCutAmount) {
+                debitBal($request->user()->id, $bonusCutAmount, 0, 'bonus_wallet', 'Tournament Entry Fee 2% Bonus Cut');
+                debitBal($request->user()->id, $tournament->entryFee - $bonusCutAmount, 0, 'deposit_wallet', 'Tournament Entry Fee');
+            } else {
+                debitBal($request->user()->id, $tournament->entryFee, 0, 'deposit_wallet', 'Tournament Entry Fee');
+            }
+
             $joinNew = new TournamentParticipant;
             $joinNew->userId = $request->user()->id;
             $joinNew->tournamentId = $request->tournament_id;
