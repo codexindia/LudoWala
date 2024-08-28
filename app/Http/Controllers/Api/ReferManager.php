@@ -19,7 +19,7 @@ class ReferManager extends Controller
             ->orderBy('users.id')
             ->distinct()
             ->limit(10)
-            ->get();
+            ->toSql();
 
         $leaderboard->transform(function ($item) {
            
