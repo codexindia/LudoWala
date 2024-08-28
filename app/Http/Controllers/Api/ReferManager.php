@@ -31,7 +31,7 @@ class ReferManager extends Controller
         $leaderboard->transform(function ($item) {
            
             $item->total_deposit ??= 0;
-            $item->profilePic = "https://api.dicebear.com/9.x/micah/svg?seed=".$item->fname.'+'.$item->lname;
+            $item->profilePic = "https://api.dicebear.com/9.x/micah/png?seed=".$item->fname.'+'.$item->lname;
             return $item;
         });
 
@@ -66,7 +66,7 @@ class ReferManager extends Controller
             // ->orderBy('total_winning', 'DESC')
             // ->paginate(10);
         $referrals->transform(function ($item) {
-            $item->profilePic = "https://api.dicebear.com/9.x/micah/svg?seed=".$item->fname.'+'.$item->lname;
+            $item->profilePic = "https://api.dicebear.com/9.x/micah/png?seed=".$item->fname.'+'.$item->lname;
           //  $item->rank = $item->getRank();
             return $item;
         });
