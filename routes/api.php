@@ -44,6 +44,7 @@ Route::middleware('chkmaintenince')->group(function () {
          });
          Route::prefix('refer')->controller(ReferManager::class)->group(function(){
             Route::post('leaderBoard', 'leaderBoard');
+            Route::post('myReferrals', 'myReferrals');
          });
     });
     

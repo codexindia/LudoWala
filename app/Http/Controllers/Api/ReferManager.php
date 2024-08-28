@@ -32,4 +32,22 @@ class ReferManager extends Controller
             'data' => $leaderboard,
         ]);
     }
+    public function myReferrals(Request $request)
+    {
+        $userId = $request->user()->id;
+        $referrals = User::select('users.fname', 'users.lname', DB::raw('(SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE walletType = "winning_wallet" AND userId = users.id) as total_winning'),DB::raw('ROW_NUMBER() OVER (ORDER BY total_winning DESC) as rank'))
+            ->where('refBy', $userId)
+            ->orderBy('users.id')
+            ->paginate(10);
+
+        $referrals->transform(function ($item) {
+          //  $item->rank = $item->getRank();
+            return $item;
+        });
+
+        return response()->json([
+            'status' => true,
+            'data' => $referrals,
+        ]);
+    }
 }
