@@ -35,7 +35,14 @@ class ReferManager extends Controller
     public function myReferrals(Request $request)
     {
         $userId = $request->user()->id;
-        $referrals = User::select('users.fname', 'users.lname', DB::raw('(SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE walletType = "winning_wallet" AND userId = users.id) as total_winning'),DB::raw('ROW_NUMBER() OVER (ORDER BY total_winning DESC) as rank'))
+        $referrals = User::select('users.fname', 'users.lname')
+            ->selectSub(function ($query) {
+                $query->selectRaw('COALESCE(SUM(amount), 0)')
+                    ->from('transactions')
+                    ->where('walletType', 'winning_wallet')
+                    ->whereColumn('userId', 'users.id');
+            }, 'total_winning')
+            ->selectRaw('ROW_NUMBER() OVER (ORDER BY total_winning DESC) as rank')
             ->where('refBy', $userId)
             ->orderBy('total_winning', 'DESC')
             ->paginate(10);
