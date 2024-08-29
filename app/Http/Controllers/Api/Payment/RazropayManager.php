@@ -69,7 +69,7 @@ class RazropayManager extends Controller
         // Handle different event types
         switch ($payload['event']) {
             case 'payment.captured':
-                Log::info($payload);
+             //   Log::info($payload);
                 $orderId = $payload['payload']['payment']['entity']['order_id'];
                 $paymentId = $payload['payload']['payment']['entity']['id'];
                 $checkOldtrx = UserOrders::where('order_id', $orderId)->first();
