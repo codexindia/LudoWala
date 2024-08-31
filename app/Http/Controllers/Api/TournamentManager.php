@@ -80,7 +80,7 @@ class TournamentManager extends Controller
         $now = Carbon::now();
 
         // Calculate the time difference since a fixed start point
-        $startTime = Carbon::create(2024, 8, 30, 17, 00, 0); // You can adjust this start time
+        $startTime = Carbon::create(2024, 8, 30, 05, 00, 0); // You can adjust this start time
         $diffInMinutes = $startTime->diffInMinutes($now);
 
         // Calculate how many 5-minute intervals have passed
