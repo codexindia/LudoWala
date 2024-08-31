@@ -17,7 +17,7 @@ class TournamentManager extends Controller
                 $query->where('userId', $userId);
             }])->get();
             ;
-            $tournament[0]['participants_count'] += $this->getTotal();
+            $tournament[0]['participants_count'] += $this->getFakeTotal();
         return response()->json([
             'status' => true,
             'data' => $tournament,
@@ -69,18 +69,18 @@ class TournamentManager extends Controller
             'message' => 'Sorry, the tournament is full',
         ]);
     }
-    public function getTotal()
+    public function getFakeTotal()
     {
-        $baseTotal = 10;
-        $incrementAmount = 2500;
-        $intervalMinutes = 5;
-        $maxTotal = 300000; // 3 lakh
+        $baseTotal = 300000;
+        $incrementAmount = 75;
+        $intervalMinutes = 1;
+        $maxTotal = 400000; // 3 lakh
 
         // Get the current time
         $now = Carbon::now();
 
         // Calculate the time difference since a fixed start point
-        $startTime = Carbon::create(2024, 8, 30, 10, 50, 0); // You can adjust this start time
+        $startTime = Carbon::create(2024, 8, 30, 17, 00, 0); // You can adjust this start time
         $diffInMinutes = $startTime->diffInMinutes($now);
 
         // Calculate how many 5-minute intervals have passed
