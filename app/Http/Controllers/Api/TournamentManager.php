@@ -74,7 +74,7 @@ class TournamentManager extends Controller
         $baseTotal = 300000;
         $incrementAmount = 75;
         $intervalMinutes = 1;
-        $maxTotal = 400000; // 3 lakh
+        $maxTotal = 450000; // 3 lakh
 
         // Get the current time
         $now = Carbon::now();
