@@ -12,15 +12,15 @@ class ReferManager extends Controller
 {
     public function leaderBoard(Request $request)
     {
-        $leaderboard = User::select('users.id', 'users.fname', 'users.lname', 'users.referCode')
+        $leaderboard = User::select('users.id', 'users.fname', 'users.lname', 'users.id')
         ->addSelect(DB::raw('COUNT(DISTINCT referred_users.id) as referral_count'))
         ->addSelect(DB::raw('COALESCE(SUM(CASE WHEN transactions.remark = "fund_added" THEN transactions.amount ELSE 0 END), 0) as total_referral_deposits'))
-        ->leftJoin('users as referred_users', 'users.referCode', '=', 'referred_users.refBy')
+        ->leftJoin('users as referred_users', 'users.id', '=', 'referred_users.refBy')
         ->leftJoin('transactions', function ($join) {
             $join->on('referred_users.id', '=', 'transactions.userId')
                 ->where('transactions.remark', '=', 'fund_added');
         })
-        ->groupBy('users.id', 'users.fname', 'users.lname', 'users.referCode')
+        ->groupBy('users.id', 'users.fname', 'users.lname', 'users.id')
         ->havingRaw('referral_count > 0')  // Only include users with at least one referral
         ->orderByDesc('referral_count')
         ->orderByDesc('total_referral_deposits')
