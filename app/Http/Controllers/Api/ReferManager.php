@@ -12,10 +12,9 @@ class ReferManager extends Controller
 {
     public function leaderBoard(Request $request)
     {
-        $leaderboard = User::select('users.id as userId','users.fname','users.lname')
+        $leaderboard = User::select('users.id as userId', 'users.fname', 'users.lname')
             ->withCount('referrals')
             ->withSum('transactions', 'amount')
-          
             ->where('transactions.walletType', 'deposit_wallet')
             ->leftJoinSub(function ($query) {
                 $query->select('refBy')
