@@ -22,6 +22,10 @@ class ReferManager extends Controller
                 ->whereNotNull('refBy')
                 ->groupBy('refBy');
             }, 'rc', 'users.id', '=', 'rc.refBy')
+            ->leftJoin('transactions', function ($join) {
+            $join->on('users.id', '=', 'transactions.userId')
+                ->where('transactions.remark', '=', 'fund_added');
+            })
             ->orderByDesc('transactions_sum_amount')
             ->orderBy('users.id')
             ->limit(10)
