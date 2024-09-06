@@ -27,11 +27,11 @@ class ReferManager extends Controller
         ->limit(10)
         ->get();
 
-        // $leaderboard->transform(function ($item) {
-        //     $item->total_deposit = $item->transactions_sum_amount;
-        //     $item->profilePic = "https://api.dicebear.com/9.x/initials/png?seed=".$item->fname.'+'.$item->lname;
-        //     return $item;
-        // });
+        $leaderboard->transform(function ($item) {
+            $item->total_deposit = $item->total_referral_deposits;
+            $item->profilePic = "https://api.dicebear.com/9.x/initials/png?seed=".$item->fname.'+'.$item->lname;
+            return $item;
+        });
 
       
 
