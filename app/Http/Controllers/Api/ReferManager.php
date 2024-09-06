@@ -12,24 +12,19 @@ class ReferManager extends Controller
 {
     public function leaderBoard(Request $request)
     {
-        $leaderboard = User::select('users.id as userId', 'users.fname', 'users.lname')
-            ->withCount('referrals')
-            ->withSum('transactions', 'amount')
-            ->leftJoinSub(function ($query) {
-            $query->select('refBy')
-                ->selectRaw('COUNT(*) as referral_count')
-                ->from('users')
-                ->whereNotNull('refBy')
-                ->groupBy('refBy');
-            }, 'rc', 'users.id', '=', 'rc.refBy')
-            ->leftJoin('transactions', function ($join) {
-            $join->on('users.id', '=', 'transactions.userId')
+        $leaderboard = User::select('users.id', 'users.fname', 'users.lname', 'users.referCode')
+        ->addSelect(DB::raw('COUNT(DISTINCT referred_users.id) as referral_count'))
+        ->addSelect(DB::raw('COALESCE(SUM(CASE WHEN transactions.remark = "fund_added" THEN transactions.amount ELSE 0 END), 0) as total_referral_deposits'))
+        ->leftJoin('users as referred_users', 'users.referCode', '=', 'referred_users.refBy')
+        ->leftJoin('transactions', function ($join) {
+            $join->on('referred_users.id', '=', 'transactions.userId')
                 ->where('transactions.remark', '=', 'fund_added');
-            })
-            ->orderByDesc('transactions_sum_amount')
-            ->orderBy('users.id')
-            ->limit(10)
-            ->get();
+        })
+        ->groupBy('users.id', 'users.fname', 'users.lname', 'users.referCode')
+        ->orderByDesc('referral_count')
+        ->orderByDesc('total_referral_deposits')
+        ->limit(10)
+        ->get();
 
         $leaderboard->transform(function ($item) {
             $item->total_deposit = $item->transactions_sum_amount;
