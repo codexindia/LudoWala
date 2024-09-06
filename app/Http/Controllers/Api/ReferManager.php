@@ -12,7 +12,7 @@ class ReferManager extends Controller
 {
     public function leaderBoard(Request $request)
     {
-        $leaderboard = User::select('users.id as userId','users.fname','users.lname')
+        $leaderboard = User::select('users.id as userId','users.fname','users.lname', 'rc.referral_count') // Include 'rc.referral_count' in the SELECT list
             ->selectSub(function ($query) {
                 $query->selectRaw('COALESCE(SUM(amount), 0)')
                     ->from('transactions')
