@@ -14,13 +14,15 @@ class ReferManager extends Controller
     {
         $leaderboard = User::select('users.id as userId','users.fname','users.lname')
             ->withCount('referrals')
-            ->withSum('transactions', 'amount')
+            ->withSum('transactions', function ($query) {
+                $query->where('remark', 'fund_added')->sum('amount');
+            })
             ->leftJoinSub(function ($query) {
-            $query->select('refBy')
-                ->selectRaw('COUNT(*) as referral_count')
-                ->from('users')
-                ->whereNotNull('refBy')
-                ->groupBy('refBy');
+                $query->select('refBy')
+                    ->selectRaw('COUNT(*) as referral_count')
+                    ->from('users')
+                    ->whereNotNull('refBy')
+                    ->groupBy('refBy');
             }, 'rc', 'users.id', '=', 'rc.refBy')
             ->orderByDesc('rc.referral_count')
             ->orderBy('users.id')
