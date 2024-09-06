@@ -24,7 +24,7 @@ class ReferManager extends Controller
                     ->whereNotNull('refBy')
                     ->groupBy('refBy');
             }, 'rc', 'users.id', '=', 'rc.refBy')
-            ->orderByDesc('rc.referral_count')
+            ->orderByDesc('transactions_sum_amount')
             ->orderBy('users.id')
             ->limit(10)
             ->get();
