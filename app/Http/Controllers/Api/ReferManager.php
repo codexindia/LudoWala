@@ -12,20 +12,22 @@ class ReferManager extends Controller
 {
     public function leaderBoard(Request $request)
     {
-        $leaderboard = User::select('users.id as userId','users.fname','users.lname', 'rc.referral_count') // Include 'rc.referral_count' in the SELECT list
-            ->selectSub(function ($query) {
-                $query->selectRaw('COALESCE(SUM(amount), 0)')
-                    ->from('transactions')
-                    ->where('walletType', 'deposit_wallet')
-                    ->whereColumn('userId', 'ref.id')
+        $leaderboard = User::select('users.id as userId','users.fname','users.lname')
+            ->withCount('referrals')
+            ->withCount(['transactions' => function ($query) {
+                $query->where('walletType', 'deposit_wallet')
                     ->where('remark', 'fund_added');
-            }, 'total_deposit')
-            ->leftJoin('users as ref', 'users.id', '=', 'ref.refBy')
-            ->leftJoin(DB::raw("(SELECT refBy, COUNT(*) as referral_count FROM users WHERE refBy IS NOT NULL GROUP BY refBy) as rc"), 'users.id', '=', 'rc.refBy')
+            }])
+            ->leftJoinSub(function ($query) {
+                $query->select('refBy')
+                    ->selectRaw('COUNT(*) as referral_count')
+                    ->from('users')
+                    ->whereNotNull('refBy')
+                    ->groupBy('refBy');
+            }, 'rc', 'users.id', '=', 'rc.refBy')
             ->orderByDesc('rc.referral_count')
             ->orderBy('users.id')
             ->limit(10)
-            ->distinct()
             ->get();
 
         $leaderboard->transform(function ($item) {
