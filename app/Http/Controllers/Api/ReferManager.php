@@ -14,9 +14,9 @@ class ReferManager extends Controller
     {
         $leaderboard = User::select('users.id as userId','users.fname','users.lname')
             ->withCount('referrals')
-            ->withSum('transactions', function ($query) {
-                $query->where('remark', 'fund_added')->sum('amount');
-            })
+            ->withSum('transactions', 'amount')
+          
+            ->where('transactions.walletType', 'deposit_wallet')
             ->leftJoinSub(function ($query) {
                 $query->select('refBy')
                     ->selectRaw('COUNT(*) as referral_count')
@@ -35,12 +35,7 @@ class ReferManager extends Controller
             return $item;
         });
 
-        $leaderboard->transform(function ($item) {
-           
-            $item->total_deposit ??= 0;
-            $item->profilePic = "https://api.dicebear.com/9.x/initials/png?seed=".$item->fname.'+'.$item->lname;
-            return $item;
-        });
+      
 
         return response()->json([
             'status' => true,
