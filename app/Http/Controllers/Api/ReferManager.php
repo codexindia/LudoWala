@@ -21,6 +21,7 @@ class ReferManager extends Controller
                 ->where('transactions.remark', '=', 'fund_added');
         })
         ->groupBy('users.id', 'users.fname', 'users.lname', 'users.referCode')
+        ->havingRaw('referral_count > 0')  // Only include users with at least one referral
         ->orderByDesc('referral_count')
         ->orderByDesc('total_referral_deposits')
         ->limit(10)
