@@ -32,15 +32,10 @@ class GameController extends Controller
         $client->initialize();
 
         // Set the bearer token for authentication
-          
-        $client->emit('joinRoom', [
-           'test' => 'test',
-           'bearerToken' => $request->bearerToken(),
-        ]);
-        $client->close();
+      
 
         // Emit an event to the server
-        $client->emit('joinRoom', [
+        $client->emit('sendMessage', [
            'test' => 'test',
         ]);
 
