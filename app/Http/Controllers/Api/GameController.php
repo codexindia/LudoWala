@@ -51,7 +51,7 @@ class GameController extends Controller
             'playerId' => 'required',
         ]);
         $diceValue = rand(1, 6);
-        $this->forwardSocket('diceRolled', ['diceValue' => $diceValue, 'playerId' => $request->playerId], $request);
+        $this->forwardSocket('diceRolled', ['diceValue' => $diceValue, 'playerId' =>  (int) $request->playerId], $request);
         return response()->json([
             'status' => true,
             'diceValue' => $diceValue,
