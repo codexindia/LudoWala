@@ -49,7 +49,7 @@ Route::middleware('chkmaintenince')->group(function () {
          });
          Route::prefix('boardConnector')->controller(GameController::class)->group(function(){
             Route::post('joinRoom', 'joinRoom');
-        
+            Route::post('eventStore', 'eventStore');
          });
     });
     
