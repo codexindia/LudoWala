@@ -55,7 +55,7 @@ class GameController extends Controller
         return response()->json([
             'status' => true,
             'diceValue' => $diceValue,
-            'playerId' => $request->playerId,
+            'playerId' => (int) $request->playerId,
             'message' => 'Dice Rolled Successfully',
         ]);
     }
