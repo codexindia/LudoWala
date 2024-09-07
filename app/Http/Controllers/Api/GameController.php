@@ -47,6 +47,6 @@ class GameController extends Controller
         // Close the connection
         $client->close();
 
-        return $client;
+        return true;
     }
 }
