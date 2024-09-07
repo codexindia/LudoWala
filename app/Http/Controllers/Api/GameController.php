@@ -48,7 +48,7 @@ class GameController extends Controller
     {
         $request->validate([
            // 'roomId' => 'required',
-            'playerId' => 'required',
+            'playerId' => 'required|in:0,1,2,3',
         ]);
         $diceValue = rand(1, 6);
         $this->forwardSocket('diceRolled', ['diceValue' => $diceValue, 'playerId' =>  (int) $request->playerId], $request);
