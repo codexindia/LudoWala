@@ -35,9 +35,7 @@ class GameController extends Controller
       
 
         // Emit an event to the server
-        $client->emit('sendMessage', [
-           'test' => 'test',
-        ]);
+        $client->emit('sendMessage', $request->test);
 
         // Close the connection
         $client->close();
