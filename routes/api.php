@@ -49,6 +49,7 @@ Route::middleware('chkmaintenince')->group(function () {
          });
          Route::prefix('boardConnector')->controller(GameController::class)->group(function(){
             Route::post('joinRoom', 'joinRoom');
+            Route::post('rollDice', 'rollDice');
             Route::post('eventStore', 'eventStore');
          });
     });
