@@ -47,7 +47,7 @@ class GameController extends Controller
     public function rollDice(Request $request)
     {
         $request->validate([
-            'roomId' => 'required',
+           // 'roomId' => 'required',
             'playerId' => 'required',
         ]);
         $diceValue = rand(1, 6);
