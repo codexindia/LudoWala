@@ -71,7 +71,7 @@ class GameController extends Controller
         //  $client = new Client(new Version2X());
 
         // Connect to the Socket.IO server
-        $client->initialize();
+        $client->connect();
 
         // Set the bearer token for authentication
 
@@ -82,7 +82,7 @@ class GameController extends Controller
         ]);
 
         // Close the connection
-        $client->close();
+        $client->disconnect();
 
         return true;
     }
