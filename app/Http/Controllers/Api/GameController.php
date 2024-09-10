@@ -25,7 +25,7 @@ class GameController extends Controller
             'tokenId' => 'required|in:A1,A2,A3,A4,B1,B2,B3,B4,C1,C2,C3,C4,D1,D2,D3,D4',
         ]);
         //to get the last event of the user
-        $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('roomId', 'demo123')->latest()->first();
+        $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId',$request->tokenId)->where('roomId', 'demo123')->latest()->first();
         $diceValue = rand(1, 6);
         $event = new BoardEvent();
         $event->userId = $request->user()->id;
