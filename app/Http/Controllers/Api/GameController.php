@@ -90,7 +90,7 @@ class GameController extends Controller
         }
         $event->save();
         //to forward the event to the socket
-        $this->forwardSocket('eventStored', ['tokenId' => $request->tokenId, 'playerId' => $event->playerId, 'position' => $event->position, 'travelCount' => $event->travelCount], $request);
+        $this->forwardSocket('tokenMoved', ['tokenId' => $request->tokenId, 'playerId' => $event->playerId, 'position' => $event->position, 'travelCount' => $event->travelCount], $request);
         //to return the response
         return response()->json([
             'status' => true,
