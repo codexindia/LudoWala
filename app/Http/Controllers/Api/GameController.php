@@ -13,6 +13,7 @@ class GameController extends Controller
     {
         return response()->json([
             'status' => true,
+            'userId' => $request->user()->id,
             'roomId' => 'demo123',
             'message' => 'Room Joined Successfully',
         ]);

@@ -36,22 +36,21 @@ Route::middleware('chkmaintenince')->group(function () {
             Route::post('deposit', 'depositAmount');
             Route::post('deposit/razorpay/webhook/handel', 'RazorppaywebHookHander')->withoutMiddleware(['auth:sanctum', 'chkmaintenince']);
         });
-        Route::prefix('tournament')->controller(TournamentManager::class)->group(function(){
-           Route::post('getTournamentList', 'getTournamentList');
-           Route::post('joinTournament', 'joinTournament');
+        Route::prefix('tournament')->controller(TournamentManager::class)->group(function () {
+            Route::post('getTournamentList', 'getTournamentList');
+            Route::post('joinTournament', 'joinTournament');
         });
-        Route::prefix('settings')->controller(SettingsManager::class)->group(function(){
-            Route::post('getSetting', 'getSetting')->withoutMiddleware(['auth:sanctum','chkmaintenince']);
-         });
-         Route::prefix('refer')->controller(ReferManager::class)->group(function(){
+        Route::prefix('settings')->controller(SettingsManager::class)->group(function () {
+            Route::post('getSetting', 'getSetting')->withoutMiddleware(['auth:sanctum', 'chkmaintenince']);
+        });
+        Route::prefix('refer')->controller(ReferManager::class)->group(function () {
             Route::post('leaderBoard', 'leaderBoard');
             Route::post('myReferrals', 'myReferrals');
-         });
-         Route::prefix('boardConnector')->controller(GameController::class)->group(function(){
+        });
+        Route::prefix('boardConnector')->controller(GameController::class)->group(function () {
             Route::post('joinRoom', 'joinRoom');
             Route::post('rollDice', 'rollDice');
             Route::post('eventStore', 'eventStore');
-         });
+        });
     });
-    
 });
