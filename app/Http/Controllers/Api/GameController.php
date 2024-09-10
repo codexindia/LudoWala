@@ -24,13 +24,14 @@ class GameController extends Controller
         $request->validate([
             'tokenId' => 'required|in:A1,A2,A3,A4,B1,B2,B3,B4,C1,C2,C3,C4,D1,D2,D3,D4',
         ]);
+        //to get the last event of the user
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('roomId', 'demo123')->latest()->first();
         $diceValue = rand(1, 6);
         $event = new BoardEvent();
         $event->userId = $request->user()->id;
         $event->roomId = 'demo123';
         $event->tokenId = $request->tokenId;
-
+        //to determine  get the playerId of the user
         if ($request->tokenId == 'A1' || $request->tokenId == 'A2' || $request->tokenId == 'A3' || $request->tokenId == 'A4') {
             $event->playerId = 0;
         } elseif ($request->tokenId == 'B1' || $request->tokenId == 'B2' || $request->tokenId == 'B3' || $request->tokenId == 'B4') {
@@ -40,28 +41,50 @@ class GameController extends Controller
         } elseif ($request->tokenId == 'D1' || $request->tokenId == 'D2' || $request->tokenId == 'D3' || $request->tokenId == 'D4') {
             $event->playerId = 3;
         }
+        //to determine the position of the user
         if ($getLastEvent) {
             $event->travelCount = $getLastEvent->travelCount + $diceValue;
             $event->position = $getLastEvent->position + $diceValue;
         } else {
+            //to determine the position of the user
             $event->travelCount = $diceValue;
             if ($event->playerId == 0) {
-                $event->position = 14 + $diceValue;
+                //if user complete their total step then sending to inner circle
+                if ($event->position == 14) {
+                    $event->position = 221 + $diceValue;
+                } else {
+                    $event->position = 14 + $diceValue;
+                }
             } elseif ($event->playerId == 1) {
-                $event->position = 27 + $diceValue;
+                if ($event->position == 25) {
+                    $event->position = 331 + $diceValue;
+                } else {
+                    $event->position = 27 + $diceValue;
+                }
             } elseif ($event->playerId == 2) {
-                $event->position = 40 + $diceValue;
+                if ($event->position == 38) {
+                    $event->position = 441 + $diceValue;
+                } else {
+                    $event->position = 40 + $diceValue;
+                }
             } elseif ($event->playerId == 3) {
-                $event->position = 51 + $diceValue;
+                if ($event->position == 51) {
+                    $event->position = 111 + $diceValue;
+                } else {
+                    $event->position = 51 + $diceValue;
+                }
             }
         }
+        //to determine the user is safe or not
         if ($event->position == 14 || $event->position == 53 || $event->position == 40 || $event->position == 27) {
             $event->isSafe = '1';
         } else {
             $event->isSafe = '0';
         }
         $event->save();
-        $this->forwardSocket('eventStored', ['tokenId' => $request->tokenId, 'position' => $event->position,'travelCount' => $event->travelCount], $request);
+        //to forward the event to the socket
+        $this->forwardSocket('eventStored', ['tokenId' => $request->tokenId, 'position' => $event->position, 'travelCount' => $event->travelCount], $request);
+        //to return the response
         return response()->json([
             'status' => true,
             'tokenId' => $request->tokenId,
