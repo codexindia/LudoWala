@@ -16,10 +16,13 @@ class GameController extends Controller
     public function joinRoom(Request $request)
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
-        $this->forwardSocket('roomReJoined',['playerId' => $checkIfUserJoined->playerId,'roomId' => $checkIfUserJoined->roomId
-    ],$request);
+      // return $checkIfUserJoined;
+
         if ($checkIfUserJoined != null) {
-           
+            // $this->forwardSocket('roomReJoined', [
+            //     'playerId' => $checkIfUserJoined->playerId,
+            //     'roomId' => $checkIfUserJoined->roomId
+          //  ], $request);
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -27,16 +30,16 @@ class GameController extends Controller
                 'message' => 'User Already Joined the Room',
             ]);
         }
-        
+
         $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->count();
-        
+
         if ($checkLastRoom > 3) {
             return response()->json([
                 'status' => false,
                 'message' => 'Room is Full',
             ]);
         }
-        
+
         $newRoom = new RoomDetails();
         if ($checkLastRoom) {
             $newRoom->playerId = $checkLastRoom;
@@ -46,8 +49,9 @@ class GameController extends Controller
         $newRoom->roomId = $this->roomId;
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
-        
+
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
+        
         return response()->json([
             'status' => true,
             'playerId' => $newRoom->playerId,
@@ -154,13 +158,15 @@ class GameController extends Controller
 
         $options = [
             'auth' => [
+               // 'token' => "Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b",               
+                
                 'token' => 'Bearer '.$request->bearerToken(),
             ]
         ];
         // Create a new Socket.IO client
-        //$client = new Client(new Version3X('ws://139.59.47.195:3000',$options));
-        $client = Client::create('https://socket.ludowalagames.com', $options);
-        
+        $client = new Client(new Version3X('https://socket.ludowalagames.com/', $options));
+        //  $client = Client::create('https://socket.ludowalagames.com', $options);
+
 
         // Connect to the Socket.IO server
         $client->connect();
