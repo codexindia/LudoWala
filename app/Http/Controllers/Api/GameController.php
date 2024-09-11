@@ -19,10 +19,10 @@ class GameController extends Controller
       // return $checkIfUserJoined;
 
         if ($checkIfUserJoined) {
-            $this->forwardSocket('roomReJoined', [
-                'playerId' => $checkIfUserJoined->playerId,
-                'roomId' => $checkIfUserJoined->roomId
-           ], $request);
+        //     $this->forwardSocket('roomReJoined', [
+        //         'playerId' => $checkIfUserJoined->playerId,
+        //         'roomId' => $checkIfUserJoined->roomId
+        //    ], $request);
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
