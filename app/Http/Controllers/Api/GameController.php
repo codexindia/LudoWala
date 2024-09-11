@@ -135,7 +135,7 @@ class GameController extends Controller
     {
         $options = [
             'auth' => [
-                'token' => 'Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b' //'Bearer ' . $request->bearerToken(),
+                'token' => 'Bearer ' . $request->bearerToken(),
             ]
         ];
         // Create a new Socket.IO client
