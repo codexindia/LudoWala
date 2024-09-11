@@ -17,7 +17,10 @@ class GameController extends Controller
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
         
         if ($checkIfUserJoined) {
-           
+            $this->forwardSocket('roomReJoined',[
+                'playerId' => $checkIfUserJoined->playerId,
+                'roomId' => $checkIfUserJoined->roomId
+            ],$request);
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -25,10 +28,7 @@ class GameController extends Controller
                 'message' => 'User Already Joined the Room',
             ]);
         }
-        $checkIfUserJoined? $this->forwardSocket('roomJoined',[
-            'playerId' => $checkIfUserJoined->playerId,
-            'roomId' => $checkIfUserJoined->roomId
-        ],$request):'';
+        
         $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->count();
         
         if ($checkLastRoom > 3) {
