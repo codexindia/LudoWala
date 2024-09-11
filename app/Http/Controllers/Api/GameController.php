@@ -23,10 +23,16 @@ class GameController extends Controller
                 'message' => 'User Already Joined the Room',
             ]);
         }
-        $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->first();
+        $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->count();
+        if($checkLastRoom > 3){
+            return response()->json([
+                'status' => false,
+                'message' => 'Room is Full',
+            ]);
+        }
         $newRoom = new RoomDetails();
         if ($checkLastRoom) {
-            $newRoom->playerId = $checkLastRoom->playerId + 1;
+            $newRoom->playerId = $checkLastRoom + 1;
         } else {
             $newRoom->playerId = 0;
         }
