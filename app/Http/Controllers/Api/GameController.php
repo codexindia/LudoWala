@@ -159,7 +159,7 @@ class GameController extends Controller
             ]
         ];
         // Create a new Socket.IO client
-        $client = Client::create('ws://socket.ludowalagames.com:3000', $options);
+        $client = Client::create('https://socket.ludowalagames.com:3000', $options);
         //  $client = new Client(new Version2X());
 
         // Connect to the Socket.IO server
