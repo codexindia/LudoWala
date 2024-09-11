@@ -133,6 +133,7 @@ class GameController extends Controller
 
     private function forwardSocket($event, $data = [], Request $request)
     {
+        
         $options = [
             'auth' => [
                 'token' => 'Bearer ' . $request->bearerToken(),
