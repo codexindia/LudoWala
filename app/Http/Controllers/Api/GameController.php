@@ -10,12 +10,13 @@ use App\Models\BoardEvent;
 
 class GameController extends Controller
 {
+    private $roomId = 'demo123';
     public function joinRoom(Request $request)
     {
         return response()->json([
             'status' => true,
             'userId' => $request->user()->id,
-            'roomId' => 'demo123',
+            'roomId' => $this->roomId,
             'message' => 'Room Joined Successfully',
         ]);
     }
@@ -25,72 +26,50 @@ class GameController extends Controller
             'tokenId' => 'required|in:A1,A2,A3,A4,B1,B2,B3,B4,C1,C2,C3,C4,D1,D2,D3,D4',
         ]);
         //to get the last event of the user
-        $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', 'demo123')->latest()->first();
-        $diceValue = rand(1, 6);
-        $event = new BoardEvent();
+        $getLastEvent = BoardEvent::whereNot('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->latest()->first();
+        $diceValue = 1;
+
+
+        if ($getLastEvent) {
+            $event = $getLastEvent;
+        } else {
+            $event = new BoardEvent();
+        }
         $event->userId = $request->user()->id;
-        $event->roomId = 'demo123';
+        $event->roomId = $this->roomId;
         $event->tokenId = $request->tokenId;
         //to determine  get the playerId of the user
-        if ($request->tokenId == 'A1' || $request->tokenId == 'A2' || $request->tokenId == 'A3' || $request->tokenId == 'A4') {
-            $event->playerId = 0;
-        } elseif ($request->tokenId == 'B1' || $request->tokenId == 'B2' || $request->tokenId == 'B3' || $request->tokenId == 'B4') {
-            $event->playerId = 1;
-        } elseif ($request->tokenId == 'C1' || $request->tokenId == 'C2' || $request->tokenId == 'C3' || $request->tokenId == 'C4') {
-            $event->playerId = 2;
-        } elseif ($request->tokenId == 'D1' || $request->tokenId == 'D2' || $request->tokenId == 'D3' || $request->tokenId == 'D4') {
-            $event->playerId = 3;
-        }
+        $event->playerId = $this->getPlayerId($request->tokenId);
         //to determine the position of the user
         if ($getLastEvent) {
             $event->travelCount = $getLastEvent->travelCount + $diceValue;
             $event->position = $getLastEvent->position + $diceValue;
-        } else {
-            //to determine the position of the user
-            $event->travelCount = $diceValue;
-            if ($event->playerId == 0) {
-                //if user complete their total step then sending to inner circle
-                if ($event->position == 14) {
-                    //turning the token to inner circle
-                    $event->position = 221 + $diceValue;
-                } else {
-                    $event->position = 14 + $diceValue;
-                }
-            } elseif ($event->playerId == 1) {
-
-                if ($event->position == 25) {
-                    //turning the token to inner circle
-                    $event->position = 331 + $diceValue;
-                } else {
-                    $event->position = 27 + $diceValue;
-                }
-            } elseif ($event->playerId == 2) {
-                if ($event->position == 38) {
-                    //turning the token to inner circle
-                    $event->position = 441 + $diceValue;
-                } else {
-                    $event->position = 40 + $diceValue;
-                }
-            } elseif ($event->playerId == 3) {
-                if ($event->position == 51) {
-                    //turning the token to inner circle
-                    $event->position = 111 + $diceValue;
-                } else {
-                    $event->position = 51 + $diceValue;
-                }
+            //to check if the user crossed 52 then reset from 1
+            if ($event->position > 52) {
+                $event->position = $event->position - 52;
             }
+            
+        } else {
+            //to determine the initial position of the user
+            $event->travelCount = $diceValue;
+            $event->position = $this->getInitialPosition($request->tokenId) + $diceValue;
         }
         //to determine the user is safe or not
-        if (($event->position == 14 || $event->position == 53 || $event->position == 40 || $event->position == 27) ||
-            ($event->position == 9 || $event->position == 22 || $event->position == 48 || $event->position == 35)
-        ) {
-            $event->isSafe = '1';
-        } else {
-            $event->isSafe = '0';
-        }
+        $safePositions = [14, 53, 40, 27, 9, 22, 48, 35];
+        $event->isSafe = in_array($event->position, $safePositions) ? '1' : '0';
         $event->save();
+        //to check if the token is returned to the home
+        $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
+
         //to forward the event to the socket
         $this->forwardSocket('tokenMoved', ['tokenId' => $request->tokenId, 'playerId' => $event->playerId, 'position' => $event->position, 'travelCount' => $event->travelCount], $request);
+        //to check if the token is returned to the home
+        if ($CheckAnyTokenReturned) {
+            $CheckAnyTokenReturned->position = $this->getInitialPosition($CheckAnyTokenReturned->tokenId);
+            $CheckAnyTokenReturned->travelCount = 0;
+            $CheckAnyTokenReturned->save();
+            $this->forwardSocket('tokenMoved', ['tokenId' => $CheckAnyTokenReturned->tokenId, 'playerId' => $this->getPlayerId($CheckAnyTokenReturned->tokenId), 'position' => $CheckAnyTokenReturned->position, 'travelCount' => $CheckAnyTokenReturned->travelCount], $request);
+        }
         //to return the response
         return response()->json([
             'status' => true,
@@ -119,7 +98,7 @@ class GameController extends Controller
     {
         $options = [
             'auth' => [
-                'token' => 'Bearer ' . $request->bearerToken(),
+                'token' => 'Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b' //'Bearer ' . $request->bearerToken(),
             ]
         ];
         // Create a new Socket.IO client
@@ -141,5 +120,25 @@ class GameController extends Controller
         $client->disconnect();
 
         return true;
+    }
+    private function getPlayerId($tokenId)
+    {
+        return match ($tokenId) {
+            'A1', 'A2', 'A3', 'A4' => 0,
+            'B1', 'B2', 'B3', 'B4' => 1,
+            'C1', 'C2', 'C3', 'C4' => 2,
+            'D1', 'D2', 'D3', 'D4' => 3,
+            default => null,
+        };
+    }
+    private function getInitialPosition($tokenId)
+    {
+        return match ($tokenId) {
+            'A1', 'A2', 'A3', 'A4' => 14,
+            'B1', 'B2', 'B3', 'B4' => 27,
+            'C1', 'C2', 'C3', 'C4' => 53,
+            'D1', 'D2', 'D3', 'D4' => 40,
+            default => null,
+        };
     }
 }
