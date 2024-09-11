@@ -15,7 +15,7 @@ class GameController extends Controller
     private $roomId = 'demo123';
     public function joinRoom(Request $request)
     {
-        $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
+        $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->latest()->first();
       // return $checkIfUserJoined;
 
         if ($checkIfUserJoined != null) {
