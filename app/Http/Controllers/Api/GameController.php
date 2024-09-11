@@ -32,7 +32,7 @@ class GameController extends Controller
         }
         $newRoom = new RoomDetails();
         if ($checkLastRoom) {
-            $newRoom->playerId = $checkLastRoom + 1;
+            $newRoom->playerId = $checkLastRoom==0?$checkLastRoom:$checkLastRoom+1;
         } else {
             $newRoom->playerId = 0;
         }
@@ -133,7 +133,7 @@ class GameController extends Controller
 
     private function forwardSocket($event, $data = [], Request $request)
     {
-        
+
         $options = [
             'auth' => [
                 'token' => 'Bearer ' . $request->bearerToken(),
