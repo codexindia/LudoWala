@@ -16,7 +16,8 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
         if ($checkIfUserJoined) {
-            $this->forwardSocket('roomJoined', ['playerId' => $checkIfUserJoined->playerId, 'roomId' => $this->roomId], $request);
+            
+            $this->forwardSocket('roomJoined', ['playerId' => $checkIfUserJoined->playerId], $request);
       
             return response()->json([
                 'status' => true,
@@ -148,7 +149,7 @@ class GameController extends Controller
 
         $options = [
             'auth' => [
-                'token' => 'Bearer ' . $request->bearerToken(),
+                'token' => "Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b",//'Bearer ' . $request->bearerToken(),
             ]
         ];
         // Create a new Socket.IO client
