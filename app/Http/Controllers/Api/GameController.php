@@ -18,9 +18,7 @@ class GameController extends Controller
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
         
         if ($checkIfUserJoined != null) {
-            $this->forwardSocket('roomReJoined',[
-                'playerId' => $checkIfUserJoined->playerId,
-                'roomId' => $checkIfUserJoined->roomId
+            $this->forwardSocket('roomReJoined',['playerId' => $checkIfUserJoined->playerId,'roomId' => $checkIfUserJoined->roomId
             ],$request);
             return response()->json([
                 'status' => true,
