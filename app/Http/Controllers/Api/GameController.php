@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\RoomDetails;
 use Illuminate\Http\Request;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
@@ -13,9 +14,28 @@ class GameController extends Controller
     private $roomId = 'demo123';
     public function joinRoom(Request $request)
     {
+        $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
+        if ($checkIfUserJoined) {
+            return response()->json([
+                'status' => true,
+                'playerId' => $checkIfUserJoined->playerId,
+                'roomId' => $checkIfUserJoined->roomId,
+                'message' => 'User Already Joined the Room',
+            ]);
+        }
+        $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->first();
+        $newRoom = new RoomDetails();
+        if ($checkLastRoom) {
+            $newRoom->playerId = $checkLastRoom->playerId + 1;
+        } else {
+            $newRoom->playerId = 0;
+        }
+        $newRoom->roomId = $this->roomId;
+        $newRoom->userId = $request->user()->id;
+        $newRoom->save();
         return response()->json([
             'status' => true,
-            'playerId' => $request->user()->mobileNumber == "9547400680"?1:2,
+            'playerId' => $newRoom->playerId,
             'roomId' => $this->roomId,
             'message' => 'Room Joined Successfully',
         ]);
@@ -28,7 +48,7 @@ class GameController extends Controller
         //to get the last event of the user
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->latest()->first();
         // return $getLastEvent;
-        $diceValue = rand(1, 6); 
+        $diceValue = rand(1, 6);
 
 
         if ($getLastEvent) {
@@ -60,7 +80,7 @@ class GameController extends Controller
             } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 51) {
                 $event->position = 440 + ($event->position - 38);
             }
-        } else { 
+        } else {
             //to determine the initial position of the user
             $event->travelCount = $diceValue;
             $event->position = $this->getInitialPosition($request->tokenId) + $diceValue;
