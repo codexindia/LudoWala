@@ -16,6 +16,8 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
         if ($checkIfUserJoined) {
+            $this->forwardSocket('roomJoined', ['playerId' => $checkIfUserJoined->playerId, 'roomId' => $this->roomId], $request);
+      
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -24,7 +26,7 @@ class GameController extends Controller
             ]);
         }
         $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->count();
-        if($checkLastRoom > 3){
+        if ($checkLastRoom > 3) {
             return response()->json([
                 'status' => false,
                 'message' => 'Room is Full',
@@ -39,6 +41,7 @@ class GameController extends Controller
         $newRoom->roomId = $this->roomId;
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
+        $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
         return response()->json([
             'status' => true,
             'playerId' => $newRoom->playerId,
@@ -51,7 +54,16 @@ class GameController extends Controller
         $request->validate([
             'tokenId' => 'required|in:A1,A2,A3,A4,B1,B2,B3,B4,C1,C2,C3,C4,D1,D2,D3,D4',
         ]);
+        $userId = $request->user()->id;
+        $gameMode = 'tournament';
+        $checkUserJoined = RoomDetails::where('userId', $userId)->where('roomType', $gameMode)->first();
         //to get the last event of the user
+        if ($checkUserJoined->playerId != $this->getPlayerId($request->tokenId)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Not Your Turn',
+            ]);
+        }
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->latest()->first();
         // return $getLastEvent;
         $diceValue = rand(1, 6);
