@@ -28,7 +28,7 @@ class GameController extends Controller
         //to get the last event of the user
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->latest()->first();
         // return $getLastEvent;
-        $diceValue = 1; //rand(1, 6); 
+        $diceValue = rand(1, 6); 
 
 
         if ($getLastEvent) {
