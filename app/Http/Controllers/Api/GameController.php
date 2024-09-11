@@ -32,7 +32,7 @@ class GameController extends Controller
         }
         $newRoom = new RoomDetails();
         if ($checkLastRoom) {
-            $newRoom->playerId = $checkLastRoom==0?$checkLastRoom:$checkLastRoom+1;
+            $newRoom->playerId += 1;
         } else {
             $newRoom->playerId = 0;
         }
