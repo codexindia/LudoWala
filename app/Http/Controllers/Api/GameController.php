@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\RoomDetails;
+use ElephantIO\Engine\SocketIO\Version3X;
 use Illuminate\Http\Request;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
@@ -155,12 +156,13 @@ class GameController extends Controller
 
         $options = [
             'auth' => [
-                'token' => 'Bearer ' . $request->bearerToken(),
+                'token' => 'Bearer '.$request->bearerToken(),
             ]
         ];
         // Create a new Socket.IO client
-        $client = Client::create('https://socket.ludowalagames.com', $options);
-        //  $client = new Client(new Version2X());
+        $client = new Client(new Version3X('https://socket.ludowalagames.com',$options));
+        //$client = Client::create('https://socket.ludowalagames.com', $options);
+        
 
         // Connect to the Socket.IO server
         $client->connect();
