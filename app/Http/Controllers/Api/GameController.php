@@ -19,10 +19,10 @@ class GameController extends Controller
       // return $checkIfUserJoined;
 
         if ($checkIfUserJoined) {
-        //     $this->forwardSocket('roomReJoined', [
-        //         'playerId' => $checkIfUserJoined->playerId,
-        //         'roomId' => $checkIfUserJoined->roomId
-        //    ], $request);
+            $this->forwardSocket('roomReJoined', [
+                'playerId' => $checkIfUserJoined->playerId,
+                'roomId' => $checkIfUserJoined->roomId
+           ], $request);
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -158,7 +158,7 @@ class GameController extends Controller
 
         $options = [
             'auth' => [
-               // 'token' => "Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b",               
+             //   'token' => "Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b",               
              'token' => 'Bearer '.$request->bearerToken(),
             ]
         ];
