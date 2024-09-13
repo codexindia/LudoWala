@@ -51,6 +51,7 @@ Route::middleware('chkmaintenince')->group(function () {
             Route::post('joinRoom', 'joinRoom');
             Route::post('rollDice', 'rollDice');
             Route::post('eventStore', 'eventStore');
+            Route::post('reFetch', 'reFetch');
         });
     });
 });

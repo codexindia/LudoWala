@@ -203,4 +203,16 @@ class GameController extends Controller
             default => null,
         };
     }
+    public function reFetch(Request $request)
+    {
+        $request->validate([
+            'roomId' => 'required|exists:room_details,roomId',
+        ]);
+        $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
+        return response()->json([
+            'status' => true,
+            'events' => $events,
+            'message' => 'Events Fetched Successfully',
+        ]);
+    }
 }
