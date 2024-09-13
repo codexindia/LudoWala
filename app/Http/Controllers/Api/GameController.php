@@ -54,7 +54,7 @@ class GameController extends Controller
         $newRoom->save();
 
 
-        
+
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
 
         return response()->json([
@@ -122,6 +122,8 @@ class GameController extends Controller
         $safePositions = [14, 53, 40, 27, 9, 22, 48, 35];
         $event->isSafe = in_array($event->position, $safePositions) ? '1' : '0';
         $event->save();
+        //to determine the next turn
+        $nextTurn = $event->playerId == 3 ? 0 : $event->playerId + 1;
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('userId', $request->user()->id)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
@@ -132,7 +134,13 @@ class GameController extends Controller
             $CheckAnyTokenReturned->position = $this->getInitialPosition($CheckAnyTokenReturned->tokenId);
             $CheckAnyTokenReturned->travelCount = 0;
             $CheckAnyTokenReturned->save();
-            $this->forwardSocket('tokenMoved', ['tokenId' => $CheckAnyTokenReturned->tokenId, 'playerId' => $this->getPlayerId($CheckAnyTokenReturned->tokenId), 'position' => $CheckAnyTokenReturned->position, 'travelCount' => $CheckAnyTokenReturned->travelCount], $request);
+            $this->forwardSocket('tokenMoved',
+             ['tokenId' => $CheckAnyTokenReturned->tokenId, 
+             'playerId' => $this->getPlayerId($CheckAnyTokenReturned->tokenId), 
+             'position' => $CheckAnyTokenReturned->position, 
+             'travelCount' => $CheckAnyTokenReturned->travelCount,
+             'nextTurn' => $nextTurn,
+            ], $request);
         }
         //to return the response
         return response()->json([
