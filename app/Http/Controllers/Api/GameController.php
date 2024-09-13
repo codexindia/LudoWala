@@ -232,10 +232,12 @@ class GameController extends Controller
         $request->validate([
             'roomId' => 'required|exists:room_details,roomId',
         ]);
+        $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest()->first()->playerId;
         $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
         return response()->json([
             'status' => true,
             'events' => $events,
+            'currentTurn' => $currentTurn,
             'message' => 'Events Fetched Successfully',
         ]);
     }
