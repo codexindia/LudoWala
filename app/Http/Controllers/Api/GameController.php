@@ -166,7 +166,7 @@ class GameController extends Controller
             );
         }
 
-        RoomDetails::where([
+       return RoomDetails::where([
             'roomId' => $this->roomId,
             'currentTurn' => '1'
         ])->update(['currentTurn' => '0']);
