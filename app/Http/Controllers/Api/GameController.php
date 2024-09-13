@@ -136,7 +136,7 @@ class GameController extends Controller
         $event->isSafe = in_array($event->position, $safePositions) ? '1' : '0';
         $event->save();
         //to determine the next turn
-        $nextTurn = $event->playerId == 3 ? 0 : $event->playerId + 1;
+        $nextTurn = RoomDetails::where('roomId', $this->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
