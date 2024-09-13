@@ -17,18 +17,20 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->latest()->first();
         // return $checkIfUserJoined;
-        $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
+
 
         if ($checkIfUserJoined) {
+            $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
             //     $this->forwardSocket('roomReJoined', [
             //         'playerId' => $checkIfUserJoined->playerId,
             //         'roomId' => $checkIfUserJoined->roomId
             //    ], $request);
-
+            $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest('updated_at')->first('playerId')->playerId;
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
                 'roomId' => $checkIfUserJoined->roomId,
+                'currentTurn' => $currentTurn,
                 'message' => 'User Already Joined the Room',
                 'events' => $events,
             ]);
@@ -128,20 +130,29 @@ class GameController extends Controller
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('userId', $request->user()->id)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
         //to forward the event to the socket
-        $this->forwardSocket('tokenMoved', ['tokenId' => $request->tokenId, 'playerId' => $event->playerId, 'position' => $event->position, 'travelCount' => $event->travelCount,
-    'nextTurn' => $nextTurn], $request);
+        $this->forwardSocket('tokenMoved', [
+            'tokenId' => $request->tokenId,
+            'playerId' => $event->playerId,
+            'position' => $event->position,
+            'travelCount' => $event->travelCount,
+            'nextTurn' => $nextTurn
+        ], $request);
         //to check if the token is returned to the home
         if ($CheckAnyTokenReturned) {
             $CheckAnyTokenReturned->position = $this->getInitialPosition($CheckAnyTokenReturned->tokenId);
             $CheckAnyTokenReturned->travelCount = 0;
             $CheckAnyTokenReturned->save();
-            $this->forwardSocket('tokenMoved',
-             ['tokenId' => $CheckAnyTokenReturned->tokenId, 
-             'playerId' => $this->getPlayerId($CheckAnyTokenReturned->tokenId), 
-             'position' => $CheckAnyTokenReturned->position, 
-             'travelCount' => $CheckAnyTokenReturned->travelCount,
-             'nextTurn' => $nextTurn,
-            ], $request);
+            $this->forwardSocket(
+                'tokenMoved',
+                [
+                    'tokenId' => $CheckAnyTokenReturned->tokenId,
+                    'playerId' => $this->getPlayerId($CheckAnyTokenReturned->tokenId),
+                    'position' => $CheckAnyTokenReturned->position,
+                    'travelCount' => $CheckAnyTokenReturned->travelCount,
+                    'nextTurn' => $nextTurn,
+                ],
+                $request
+            );
         }
         //to return the response
         return response()->json([
