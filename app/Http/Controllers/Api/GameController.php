@@ -81,7 +81,7 @@ class GameController extends Controller
                 'message' => 'Not Your Turn',
             ]);
         }
-        $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->latest()->first();
+        $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->first();
         // return $getLastEvent;
         $diceValue = rand(1, 6);
 
