@@ -128,7 +128,8 @@ class GameController extends Controller
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('userId', $request->user()->id)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
         //to forward the event to the socket
-        $this->forwardSocket('tokenMoved', ['tokenId' => $request->tokenId, 'playerId' => $event->playerId, 'position' => $event->position, 'travelCount' => $event->travelCount], $request);
+        $this->forwardSocket('tokenMoved', ['tokenId' => $request->tokenId, 'playerId' => $event->playerId, 'position' => $event->position, 'travelCount' => $event->travelCount,
+    'nextTurn' => $nextTurn], $request);
         //to check if the token is returned to the home
         if ($CheckAnyTokenReturned) {
             $CheckAnyTokenReturned->position = $this->getInitialPosition($CheckAnyTokenReturned->tokenId);
