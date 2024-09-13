@@ -25,7 +25,7 @@ class GameController extends Controller
             //         'playerId' => $checkIfUserJoined->playerId,
             //         'roomId' => $checkIfUserJoined->roomId
             //    ], $request);
-            $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest('updated_at')->first('playerId')->playerId ?? 0;
+            $currentTurn = RoomDetails::where('roomId', $this->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -49,6 +49,7 @@ class GameController extends Controller
         if ($checkLastRoom) {
             $newRoom->playerId = $checkLastRoom;
         } else {
+            $newRoom->currentTurn = 1;
             $newRoom->playerId = 0;
         }
         $newRoom->roomId = $this->roomId;
@@ -137,7 +138,7 @@ class GameController extends Controller
         //to determine the next turn
         $nextTurn = $event->playerId == 3 ? 0 : $event->playerId + 1;
         //to check if the token is returned to the home
-        $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('userId', $request->user()->id)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
+        $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
         //to forward the event to the socket
         $this->forwardSocket('tokenMoved', [
@@ -164,6 +165,17 @@ class GameController extends Controller
                 $request
             );
         }
+
+        RoomDetails::where([
+            'roomId'=> $this->roomId,
+            'userId' => $userId,
+            'currentTurn' => 1,
+        ])->update(['currentTurn' => 0]);
+        RoomDetails::where([
+            'roomId'=> $this->roomId,
+            'userId' => $userId,
+            'currentTurn' => 0,
+        ])->limit(1)->update(['currentTurn' => 1]);
         //to return the response
         return response()->json([
             'status' => true,
