@@ -56,16 +56,16 @@ class GameController extends Controller
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
         //set the initial position of the user
-       foreach($this->getTokenByPid($newRoom->playerId) as $token){
-        $event = new BoardEvent();
-        $event->userId = $request->user()->id;
-        $event->roomId = $this->roomId;
-        $event->tokenId = $token;
-        $event->playerId = $newRoom->playerId;
-        $event->position = $this->getInitialPositionByPid($newRoom->playerId);
-        $event->travelCount = 0;
-        $event->save();
-       }
+        foreach ($this->getTokenByPid($newRoom->playerId) as $token) {
+            $event = new BoardEvent();
+            $event->userId = $request->user()->id;
+            $event->roomId = $this->roomId;
+            $event->tokenId = $token;
+            $event->playerId = $newRoom->playerId;
+            $event->position = $this->getInitialPositionByPid($newRoom->playerId);
+            $event->travelCount = 0;
+            $event->save();
+        }
 
 
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
@@ -167,13 +167,13 @@ class GameController extends Controller
         }
 
         RoomDetails::where([
-            'roomId'=> $this->roomId,
+            'roomId' => $this->roomId,
             //'userId' => $userId,
             'currentTurn' => 1,
         ])->update(['currentTurn' => 0]);
+        
         RoomDetails::where([
-            'roomId'=> $this->roomId,
-          
+            'roomId' => $this->roomId,
             'currentTurn' => 0,
         ])->limit(1)->update(['currentTurn' => 1]);
         //to return the response
