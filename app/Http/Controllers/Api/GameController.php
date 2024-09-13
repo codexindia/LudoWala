@@ -168,7 +168,7 @@ class GameController extends Controller
 
         $changeCurrentState = RoomDetails::where(
             'roomId' ,'=', $this->roomId,
-            )->where('currentTurn', '=' ,'1')->decrement('currentTurn' , '0');
+            )->where('currentTurn', '=' ,'1')->decrement('currentTurn' , 1);
 
         if ($changeCurrentState) {
             RoomDetails::where([
