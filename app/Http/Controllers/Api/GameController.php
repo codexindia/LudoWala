@@ -25,7 +25,7 @@ class GameController extends Controller
             //         'playerId' => $checkIfUserJoined->playerId,
             //         'roomId' => $checkIfUserJoined->roomId
             //    ], $request);
-            $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest('updated_at')->first('playerId')->playerId??0;
+            $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest('updated_at')->first('playerId')->playerId ?? 0;
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -54,7 +54,17 @@ class GameController extends Controller
         $newRoom->roomId = $this->roomId;
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
-
+        //set the initial position of the user
+       foreach($this->getTokenByPid($newRoom->playerId) as $token){
+        $event = new BoardEvent();
+        $event->userId = $request->user()->id;
+        $event->roomId = $this->roomId;
+        $event->tokenId = $token;
+        $event->playerId = $newRoom->playerId;
+        $event->position = $this->getInitialPositionByPid($newRoom->playerId);
+        $event->travelCount = 0;
+        $event->save();
+       }
 
 
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
@@ -188,7 +198,7 @@ class GameController extends Controller
             ]
         ];
         // Create a new Socket.IO client
-       // $client = new Client(new Version3X('wss://socket.ludowalagames.com:3000', $options));
+        // $client = new Client(new Version3X('wss://socket.ludowalagames.com:3000', $options));
         $client = Client::create('wss://socket.ludowalagames.com:3000', $options);
 
 
@@ -225,6 +235,16 @@ class GameController extends Controller
             'B1', 'B2', 'B3', 'B4' => 27,
             'C1', 'C2', 'C3', 'C4' => 53,
             'D1', 'D2', 'D3', 'D4' => 40,
+            default => null,
+        };
+    }
+    public function getTokenByPid($playerId)
+    {
+        return match ($playerId) {
+            0 => ['A1', 'A2', 'A3', 'A4'],
+            1 => ['B1', 'B2', 'B3', 'B4'],
+            2 =>  ['C1', 'C2', 'C3', 'C4'],
+            3 => ['D1', 'D2', 'D3', 'D4'],
             default => null,
         };
     }
