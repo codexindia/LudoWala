@@ -25,7 +25,7 @@ class GameController extends Controller
             //         'playerId' => $checkIfUserJoined->playerId,
             //         'roomId' => $checkIfUserJoined->roomId
             //    ], $request);
-            $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest('updated_at')->first('playerId')->playerId;
+            $currentTurn = BoardEvent::where('roomId', $this->roomId)->latest('updated_at')->first('playerId')->playerId??0;
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
