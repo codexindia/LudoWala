@@ -171,11 +171,13 @@ class GameController extends Controller
             'currentTurn' => 1
         ])->update(['currentTurn' => 0]);
        
-        $changeCurrentState1 = RoomDetails::where([
+        if($changeCurrentState) 
+        {RoomDetails::where([
             'roomId' => $this->roomId,
             'currentTurn' => 0,
         ])->limit(1)->update(['currentTurn' => 1]);
-        if($changeCurrentState && $changeCurrentState1)
+        }
+      
         //to return the response
         return response()->json([
             'status' => true,
