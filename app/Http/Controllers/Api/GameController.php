@@ -168,8 +168,7 @@ class GameController extends Controller
 
         RoomDetails::where([
             'roomId' => $this->roomId,
-            //'userId' => $userId,
-            'currentTurn' => '1',
+            'currentTurn' => '1'
         ])->update(['currentTurn' => '0']);
 
         RoomDetails::where([
