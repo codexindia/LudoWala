@@ -16,18 +16,21 @@ class GameController extends Controller
     public function joinRoom(Request $request)
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->latest()->first();
-      // return $checkIfUserJoined;
+        // return $checkIfUserJoined;
+        $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
 
         if ($checkIfUserJoined) {
-        //     $this->forwardSocket('roomReJoined', [
-        //         'playerId' => $checkIfUserJoined->playerId,
-        //         'roomId' => $checkIfUserJoined->roomId
-        //    ], $request);
+            //     $this->forwardSocket('roomReJoined', [
+            //         'playerId' => $checkIfUserJoined->playerId,
+            //         'roomId' => $checkIfUserJoined->roomId
+            //    ], $request);
+
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
                 'roomId' => $checkIfUserJoined->roomId,
                 'message' => 'User Already Joined the Room',
+                'events' => $events,
             ]);
         }
 
@@ -50,8 +53,10 @@ class GameController extends Controller
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
 
-        $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
+
         
+        $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
+
         return response()->json([
             'status' => true,
             'playerId' => $newRoom->playerId,
@@ -158,13 +163,13 @@ class GameController extends Controller
 
         $options = [
             'auth' => [
-             //   'token' => "Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b",               
-             'token' => 'Bearer '.$request->bearerToken(),
+                //   'token' => "Bearer 4441|bOAG2ubqGDG5XuZoEXlJ6BCQezaRrTyod7FsIZrbc23ccc4b",               
+                'token' => 'Bearer ' . $request->bearerToken(),
             ]
         ];
         // Create a new Socket.IO client
-         $client = new Client(new Version3X('wss://socket.ludowalagames.com:3000', $options));
-         //$client = Client::create('ws://socket.ludowalagames.com:3000', $options);
+        $client = new Client(new Version3X('wss://socket.ludowalagames.com:3000', $options));
+        //$client = Client::create('ws://socket.ludowalagames.com:3000', $options);
 
 
         // Connect to the Socket.IO server
@@ -200,6 +205,16 @@ class GameController extends Controller
             'B1', 'B2', 'B3', 'B4' => 27,
             'C1', 'C2', 'C3', 'C4' => 53,
             'D1', 'D2', 'D3', 'D4' => 40,
+            default => null,
+        };
+    }
+    private function getInitialPositionByPid($tokenId)
+    {
+        return match ($tokenId) {
+            0 => 14,
+            1 => 27,
+            2 => 53,
+            3 => 40,
             default => null,
         };
     }
