@@ -170,9 +170,9 @@ class GameController extends Controller
         if ($CheckAnyTokenReturned || $diceValue == 6) {
             $nextTurn =  $event->playerId;
         }
-        if ($CheckAnyTokenReturned != true && $diceValue != 6) {
+     //   if ($CheckAnyTokenReturned != true && $diceValue != 6) {
             $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
-        }
+     //   }
 
         //to forward the event to the socket
         $this->forwardSocket('tokenMoved', [
