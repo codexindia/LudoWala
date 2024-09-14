@@ -165,14 +165,15 @@ class GameController extends Controller
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
-        if ($CheckAnyTokenReturned != true && $diceValue != 6) {
-            $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
-        }
-
+       
         //to check is this already a token on the same position
         if ($CheckAnyTokenReturned || $diceValue == 6) {
             $nextTurn =  $event->playerId;
         }
+        if ($CheckAnyTokenReturned != true && $diceValue != 6) {
+            $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
+        }
+
         //to forward the event to the socket
         $this->forwardSocket('tokenMoved', [
             'tokenId' => $request->tokenId,
