@@ -165,7 +165,7 @@ class GameController extends Controller
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
-        if (!$CheckAnyTokenReturned && $diceValue != 6) {
+        if ($CheckAnyTokenReturned != true && $diceValue != 6) {
             $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
         }
 
@@ -205,7 +205,7 @@ class GameController extends Controller
             ]);
         }
         //remove dice chance 
-        if ($getLastDice->diceValue  != 6) {
+        if ($CheckAnyTokenReturned !=true ||$getLastDice->diceValue  != 6) {
             $getLastDice->update(['currentTurn' => 0]);
             //remove dice chance 
             //give dice chance to next player
