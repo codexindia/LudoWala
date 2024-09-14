@@ -91,7 +91,7 @@ class GameController extends Controller
 
         return response()->json([
             'status' => true,
-            'playerData' => $playerData,
+            'playerData' => $players,
             'playerId' => $newRoom->playerId,
             'roomId' => $this->roomId,
             'message' => 'Room Joined Successfully',
