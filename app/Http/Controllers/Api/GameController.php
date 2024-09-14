@@ -214,8 +214,14 @@ class GameController extends Controller
             'playerId' => 'required|in:0,1,2,3',
         ]);
         $diceValue = rand(1, 6);
-        $dice = DiceRolling::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
-        $dice->update(['diceValue' => $diceValue]);
+        $diceModel = DiceRolling::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
+        if($diceModel->currentTurn == 0){
+            return response()->json([
+                'status' => false,
+                'message' => 'Not Your Turn(dice)',
+            ]);
+        }
+        $diceModel->update(['diceValue' => $diceValue]);
 
         $this->forwardSocket('diceRolled', ['diceValue' => $diceValue, 'playerId' =>  (int) $request->playerId], $request);
 
