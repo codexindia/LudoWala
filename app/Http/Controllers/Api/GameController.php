@@ -124,9 +124,9 @@ class GameController extends Controller
             } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount > 51) {
                 $event->position = 330 + ($event->position - 25);
             } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 51) {
-                $event->position = 110 + ($event->position - 51);
-            } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 51) {
                 $event->position = 440 + ($event->position - 38);
+            } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 51) {
+                $event->position = 110 + ($event->position - 51);
             }
         } else {
             //to determine the initial position of the user
@@ -240,8 +240,8 @@ class GameController extends Controller
         return match ($tokenId) {
             'A1', 'A2', 'A3', 'A4' => 14,
             'B1', 'B2', 'B3', 'B4' => 27,
-            'C1', 'C2', 'C3', 'C4' => 53,
-            'D1', 'D2', 'D3', 'D4' => 40,
+            'C1', 'C2', 'C3', 'C4' => 40,
+            'D1', 'D2', 'D3', 'D4' => 53,
             default => null,
         };
     }
@@ -260,8 +260,8 @@ class GameController extends Controller
         return match ($tokenId) {
             0 => 14,
             1 => 27,
-            2 => 53,
-            3 => 40,
+            2 => 40,
+            3 => 53,
             default => null,
         };
     }
