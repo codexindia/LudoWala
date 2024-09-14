@@ -110,12 +110,9 @@ class GameController extends Controller
         }
         $checkUserJoined->update(['currentTurn' => 0]);
 
-
-
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->first();
         // return $getLastEvent;
         $diceValue = $getLastDice->diceValue;
-
 
         if ($getLastEvent) {
             $event = $getLastEvent;
@@ -157,10 +154,20 @@ class GameController extends Controller
         $event->save();
         //to determine the next turn
         $nextTurn = RoomDetails::where('roomId', $this->roomId)->count() == $event->playerId + 1 ? 0 : $event->playerId + 1;
-        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
+       
+      
+
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
+    if(!$CheckAnyTokenReturned){
+        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
+    }
+
+        //to check is this already a token on the same position
+        if ($CheckAnyTokenReturned) {
+            $nextTurn =  $event->playerId;
+        }
         //to forward the event to the socket
         $this->forwardSocket('tokenMoved', [
             'tokenId' => $request->tokenId,
@@ -193,12 +200,12 @@ class GameController extends Controller
             ]);
         }
         //remove dice chance 
-
-        $getLastDice->update(['currentTurn' => 0]);
-        //remove dice chance 
-        //give dice chance to next player
-        DiceRolling::where('roomId', $this->roomId)->where('playerId', $nextTurn)->first()->update(['currentTurn' => 1]);
-
+        if ($getLastDice->diceValue  != 6) {
+            $getLastDice->update(['currentTurn' => 0]);
+            //remove dice chance 
+            //give dice chance to next player
+            DiceRolling::where('roomId', $this->roomId)->where('playerId', $nextTurn)->first()->update(['currentTurn' => 1]);
+        }
         //to return the response
         return response()->json([
             'status' => true,
@@ -215,7 +222,7 @@ class GameController extends Controller
         ]);
         $diceValue = rand(1, 6);
         $diceModel = DiceRolling::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
-        if($diceModel->currentTurn == 0){
+        if ($diceModel->currentTurn == 0) {
             return response()->json([
                 'status' => false,
                 'message' => 'Not Your Turn(dice)',
