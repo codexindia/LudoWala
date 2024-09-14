@@ -197,7 +197,7 @@ class GameController extends Controller
         $getLastDice->update(['currentTurn' => 0]);
         //remove dice chance 
         //give dice chance to next player
-         RoomDetails::where('roomId', $this->roomId)->where('playerId', $nextTurn)->first()->update(['currentTurn' => 1]);
+        RoomDetails::where('roomId', $this->roomId)->where('playerId', $nextTurn)->first()->update(['currentTurn' => 1]);
 
         //to return the response
         return response()->json([
@@ -214,7 +214,11 @@ class GameController extends Controller
             'playerId' => 'required|in:0,1,2,3',
         ]);
         $diceValue = rand(1, 6);
+        $dice = DiceRolling::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
+        $dice->update(['diceValue' => $diceValue]);
+        
         $this->forwardSocket('diceRolled', ['diceValue' => $diceValue, 'playerId' =>  (int) $request->playerId], $request);
+
         return response()->json([
             'status' => true,
             'diceValue' => $diceValue,
