@@ -184,6 +184,8 @@ class GameController extends Controller
         ], $request);
         //to check if the token is returned to the home
         if ($CheckAnyTokenReturned) {
+            $CheckAnyTokenReturned->isSafe = in_array($CheckAnyTokenReturned->position, $safePositions) ? '1' : '0';
+        
             $CheckAnyTokenReturned->position = $this->getInitialPosition($CheckAnyTokenReturned->tokenId);
             $CheckAnyTokenReturned->travelCount = 0;
             $CheckAnyTokenReturned->save();
