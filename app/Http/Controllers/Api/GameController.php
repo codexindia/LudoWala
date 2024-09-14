@@ -92,6 +92,8 @@ class GameController extends Controller
                 'message' => 'Not Your Turn',
             ]);
         }
+        $checkUserJoined->update(['currentTurn' => 0]);
+        
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->first();
         // return $getLastEvent;
         $diceValue = rand(1, 6);
@@ -136,7 +138,8 @@ class GameController extends Controller
         $event->isSafe = in_array($event->position, $safePositions) ? '1' : '0';
         $event->save();
         //to determine the next turn
-        $nextTurn = RoomDetails::where('roomId', $this->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
+        $nextTurn = RoomDetails::where('roomId', $this->roomId)->count() == $event->playerId + 1 ? 0 : $event->playerId + 1;
+        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator:$nextTurn)->update(['currentTurn' => 1]);
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
@@ -166,17 +169,7 @@ class GameController extends Controller
             );
         }
 
-        $changeCurrentState = RoomDetails::where(
-            'roomId' , $this->roomId,
-        )->where('currentTurn', '1')->limit(1
-            )->update(['currentTurn' => 0]);
-
-        if ($changeCurrentState) {
-            RoomDetails::where([
-                'roomId' => $this->roomId,
-                'currentTurn' => '0',
-            ])->limit(1)->update(['currentTurn' => 1]);
-        }
+       
 
         //to return the response
         return response()->json([
