@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
 use App\Models\BoardEvent;
+use Illuminate\Support\Facades\DB;
 
 class GameController extends Controller
 {
@@ -18,8 +19,10 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->latest()->first();
         // return $checkIfUserJoined;
-
-
+      
+    $players = RoomDetails::where('roomId', $this->roomId)
+        ->join('users', 'users.id', '=', 'room_details.userId')
+        ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
         if ($checkIfUserJoined) {
             $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
             //     $this->forwardSocket('roomReJoined', [
@@ -32,6 +35,7 @@ class GameController extends Controller
                 'playerId' => $checkIfUserJoined->playerId,
                 'roomId' => $checkIfUserJoined->roomId,
                 'currentTurn' => $currentTurn,
+                'players' => $players,
                 'message' => 'User Already Joined the Room',
                 'events' => $events,
             ]);
@@ -82,11 +86,12 @@ class GameController extends Controller
             $event->save();
         }
 
-
+        //   $playerData = RoomDetails::where('roomId', $this->roomId)->with('userDetail:fname,lname')->get(['userId', 'playerId']);
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
 
         return response()->json([
             'status' => true,
+            'playerData' => $playerData,
             'playerId' => $newRoom->playerId,
             'roomId' => $this->roomId,
             'message' => 'Room Joined Successfully',
@@ -154,15 +159,15 @@ class GameController extends Controller
         $event->save();
         //to determine the next turn
         $nextTurn = RoomDetails::where('roomId', $this->roomId)->count() == $event->playerId + 1 ? 0 : $event->playerId + 1;
-       
-      
+
+
 
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
-    if(!$CheckAnyTokenReturned){
-        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
-    }
+        if (!$CheckAnyTokenReturned) {
+            $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
+        }
 
         //to check is this already a token on the same position
         if ($CheckAnyTokenReturned) {
