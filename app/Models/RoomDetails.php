@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class RoomDetails extends Model
 {
-   // protected $guarded = ['id'];
+    protected $guarded = ['id'];
     use HasFactory;
 }
