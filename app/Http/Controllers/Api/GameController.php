@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\DiceRolling;
 use App\Models\RoomDetails;
 use ElephantIO\Engine\SocketIO\Version3X;
 use Illuminate\Http\Request;
@@ -44,17 +45,31 @@ class GameController extends Controller
                 'message' => 'Room is Full',
             ]);
         }
-
+        $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
         if ($checkLastRoom) {
             $newRoom->playerId = $checkLastRoom;
+            //to give first chance to player id 0
+            $setIntialDice->currentTurn = 0;
         } else {
             $newRoom->currentTurn = 1;
             $newRoom->playerId = 0;
+            //to give first chance to player id 0
+            $setIntialDice->currentTurn = 1;
         }
         $newRoom->roomId = $this->roomId;
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
+
+
+        //set intial dice value
+        $setIntialDice->userId = $request->user()->id;
+        $setIntialDice->playerId = $newRoom->playerId;
+        $setIntialDice->roomId = $this->roomId;
+
+
+        $setIntialDice->save();
+        //set intial dice value end
         //set the initial position of the user
         foreach ($this->getTokenByPid($newRoom->playerId) as $token) {
             $event = new BoardEvent();
@@ -85,18 +100,21 @@ class GameController extends Controller
         $userId = $request->user()->id;
         $gameMode = 'tournament';
         $checkUserJoined = RoomDetails::where('userId', $userId)->where('roomType', $gameMode)->first();
+        $getLastDice = DiceRolling::where('userId', $userId)->where('roomId', $this->roomId)->first();
         //to get the last event of the user
-        if ($checkUserJoined->playerId != $this->getPlayerId($request->tokenId)) {
+        if ($checkUserJoined->playerId != $this->getPlayerId($request->tokenId) && $checkUserJoined->currentTurn == 0) {
             return response()->json([
                 'status' => false,
                 'message' => 'Not Your Turn',
             ]);
         }
         $checkUserJoined->update(['currentTurn' => 0]);
-        
+
+
+
         $getLastEvent = BoardEvent::where('userId', $request->user()->id)->where('tokenId', $request->tokenId)->where('roomId', $this->roomId)->first();
         // return $getLastEvent;
-        $diceValue = rand(1, 6);
+        $diceValue = $getLastDice->diceValue;
 
 
         if ($getLastEvent) {
@@ -139,7 +157,7 @@ class GameController extends Controller
         $event->save();
         //to determine the next turn
         $nextTurn = RoomDetails::where('roomId', $this->roomId)->count() == $event->playerId + 1 ? 0 : $event->playerId + 1;
-        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator:$nextTurn)->update(['currentTurn' => 1]);
+        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
 
@@ -167,9 +185,19 @@ class GameController extends Controller
                 ],
                 $request
             );
+            return response()->json([
+                'status' => true,
+                'tokenId' => $request->tokenId,
+                'diceValue' => $diceValue,
+                'message' => 'Event Stored Successfully',
+            ]);
         }
+        //remove dice chance 
 
-       
+        $getLastDice->update(['currentTurn' => 0]);
+        //remove dice chance 
+        //give dice chance to next player
+         RoomDetails::where('roomId', $this->roomId)->where('playerId', $nextTurn)->first()->update(['currentTurn' => 1]);
 
         //to return the response
         return response()->json([
