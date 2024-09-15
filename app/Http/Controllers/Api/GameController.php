@@ -295,7 +295,7 @@ class GameController extends Controller
             'A1', 'A2', 'A3', 'A4' => 14,
             'B1', 'B2', 'B3', 'B4' => 27,
             'C1', 'C2', 'C3', 'C4' => 40,
-            'D1', 'D2', 'D3', 'D4' => 53,
+            'D1', 'D2', 'D3', 'D4' => 1,
             default => null,
         };
     }
@@ -315,7 +315,7 @@ class GameController extends Controller
             0 => 14,
             1 => 27,
             2 => 40,
-            3 => 53,
+            3 => 1,
             default => null,
         };
     }
