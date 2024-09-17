@@ -163,7 +163,7 @@ class GameController extends Controller
 
 
         //to check if the token is returned to the home
-        $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('tokenId', $request->tokenId)->where('isSafe', '0')->first();
+        $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('playerId', $event->playerId)->where('isSafe', '0')->first();
 
        
         //to check is this already a token on the same position
