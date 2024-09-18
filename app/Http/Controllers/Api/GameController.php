@@ -19,10 +19,10 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->latest()->first();
         // return $checkIfUserJoined;
-      
-    $players = RoomDetails::where('roomId', $this->roomId)
-        ->join('users', 'users.id', '=', 'room_details.userId')
-        ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
+
+        $players = RoomDetails::where('roomId', $this->roomId)
+            ->join('users', 'users.id', '=', 'room_details.userId')
+            ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
         if ($checkIfUserJoined) {
             $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
             //     $this->forwardSocket('roomReJoined', [
@@ -93,7 +93,7 @@ class GameController extends Controller
             'status' => true,
             'players' => $players,
             'playerId' => $newRoom->playerId,
-           // 'events' => $events,
+            // 'events' => $events,
             'roomId' => $this->roomId,
             'message' => 'Room Joined Successfully',
         ]);
@@ -141,13 +141,28 @@ class GameController extends Controller
             }
             //entering to wining area and check they complete their travel or not
             if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 50) {
-                $event->position = 220 + $diceValue;
+                if ($event->position < 220)
+                    $event->position = 220 + $diceValue;
+                else
+                    $event->position = $event->position + $diceValue;
             } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount > 50) {
-                $event->position = 330 + $diceValue;
+                if($event->position < 330)
+                    $event->position = 330 + $diceValue;
+                else
+                    $event->position = $event->position + $diceValue;
+               
             } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 50) {
-                $event->position = 440 + $diceValue;
+                if($event->position < 440)
+                    $event->position = 440 + $diceValue;
+                else
+                    $event->position = $event->position + $diceValue;
+             
             } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 50) {
-                $event->position = 110 + $diceValue;
+                if($event->position < 110)
+                    $event->position = 110 + $diceValue;
+                else
+                    $event->position = $event->position + $diceValue;
+                
             }
         } else {
             //to determine the initial position of the user
@@ -166,21 +181,21 @@ class GameController extends Controller
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('playerId', $event->playerId)->where('isSafe', '0')->first();
 
-       
+
         //to check is this already a token on the same position
         if ($CheckAnyTokenReturned || $diceValue == 6) {
             $nextTurn =  $event->playerId;
         }
         //check if complete the travel and give another chance
-        if($event->travelCount >= 56){
+        if ($event->travelCount >= 56) {
             $nextTurn =  $event->playerId;
-         //   $event->isWin ='1';
-          //  $event->position += 1;
-          //  $event->save();
+            //   $event->isWin ='1';
+            //  $event->position += 1;
+            //  $event->save();
         }
-     //   if ($CheckAnyTokenReturned != true && $diceValue != 6) {
-            $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
-     //   }
+        //   if ($CheckAnyTokenReturned != true && $diceValue != 6) {
+        $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
+        //   }
 
         //to forward the event to the socket
         $this->forwardSocket('tokenMoved', [
@@ -192,10 +207,10 @@ class GameController extends Controller
         ], $request);
         //to check if the token is returned to the home
         if ($CheckAnyTokenReturned) {
-           
+
             $CheckAnyTokenReturned->position = $this->getInitialPosition($CheckAnyTokenReturned->tokenId);
             $CheckAnyTokenReturned->isSafe = in_array($CheckAnyTokenReturned->position, $safePositions) ? '1' : '0';
-        
+
             $CheckAnyTokenReturned->travelCount = 0;
             $CheckAnyTokenReturned->save();
             $this->forwardSocket(
@@ -217,7 +232,7 @@ class GameController extends Controller
             ]);
         }
         //remove dice chance 
-        if ($CheckAnyTokenReturned !=true ||$getLastDice->diceValue  != 6) {
+        if ($CheckAnyTokenReturned != true || $getLastDice->diceValue  != 6) {
             $getLastDice->update(['currentTurn' => 0]);
             //remove dice chance 
             //give dice chance to next player
