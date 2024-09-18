@@ -141,30 +141,13 @@ class GameController extends Controller
             }
             //entering to wining area and check they complete their travel or not
             if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 50) {
-                if ($event->position < 220) {
-                    $event->position = 220 + $diceValue;
-                }
-                else{
-                    $event->position += $diceValue;
-                }
+                $event->position = 220 + ($event->position - 12);
             } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount > 50) {
-                if ($event->position < 330) {
-                    $event->position = 330 + $diceValue;
-                }else{
-                    $event->position += $diceValue;
-                }
+                $event->position = 330 + ($event->position - 25);
             } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 50) {
-                if ($event->position < 440) {
-                    $event->position = 440 + $diceValue;
-                }else{
-                    $event->position += $diceValue;
-                }
+                $event->position = 110 + ($event->position - 51);
             } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 50) {
-                if ($event->position < 110) {
-                    $event->position = 110 + $diceValue;
-                }else{
-                    $event->position += $diceValue;
-                }
+                $event->position = 440 + ($event->position - 38);
             }
         } else {
             //to determine the initial position of the user
