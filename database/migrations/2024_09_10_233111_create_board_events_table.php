@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('travelCount');
             $table->integer('position');
             $table->enum('isSafe',['0','1'])->default('1');
+            $table->enum('isWin',['0','1'])->default('0');
             $table->timestamps();
         });
     }

@@ -91,8 +91,9 @@ class GameController extends Controller
 
         return response()->json([
             'status' => true,
-            'playerData' => $players,
+            'players' => $players,
             'playerId' => $newRoom->playerId,
+           // 'events' => $events,
             'roomId' => $this->roomId,
             'message' => 'Room Joined Successfully',
         ]);
@@ -169,6 +170,11 @@ class GameController extends Controller
         //to check is this already a token on the same position
         if ($CheckAnyTokenReturned || $diceValue == 6) {
             $nextTurn =  $event->playerId;
+        }
+        if($event->travelCount >= 57){
+            $nextTurn =  $event->playerId;
+            $event->update(['isWin' => 1]);
+             
         }
      //   if ($CheckAnyTokenReturned != true && $diceValue != 6) {
             $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
