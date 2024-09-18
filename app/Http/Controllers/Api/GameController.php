@@ -11,6 +11,7 @@ use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
 use App\Models\BoardEvent;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GameController extends Controller
 {
@@ -132,7 +133,7 @@ class GameController extends Controller
         $event->playerId = $this->getPlayerId($request->tokenId);
         //to determine the position of the user
         if ($getLastEvent) {
-
+              Log::info('getLastEvent' . $getLastEvent->position.' '.$diceValue);
             $event->travelCount = $getLastEvent->travelCount + $diceValue;
             $event->position = $getLastEvent->position + $diceValue;
             //to check if the user crossed 52 position then reset from 1
