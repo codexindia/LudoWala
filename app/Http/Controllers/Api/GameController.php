@@ -140,13 +140,13 @@ class GameController extends Controller
                 $event->position = $event->position - 52;
             }
             //entering to wining area and check they complete their travel or not
-            if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 51) {
+            if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount >= 51) {
                 $event->position = 220 + $diceValue;
-            } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount > 51) {
+            } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount >= 51) {
                 $event->position = 330 + $diceValue;
-            } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 51) {
+            } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount >= 51) {
                 $event->position = 440 + $diceValue;
-            } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 51) {
+            } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount >= 51) {
                 $event->position = 110 + $diceValue;
             }
         } else {
