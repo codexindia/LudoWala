@@ -174,7 +174,8 @@ class GameController extends Controller
         //check if complete the travel and give another chance
         if($event->travelCount >= 57){
             $nextTurn =  $event->playerId;
-            $event->update(['isWin' => '1']);
+            $event->isWin = '1';
+            $event->save();
         }
      //   if ($CheckAnyTokenReturned != true && $diceValue != 6) {
             $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
