@@ -151,7 +151,7 @@ class GameController extends Controller
             }
         } else {
             //to determine the initial position of the user
-            $event->travelCount = $diceValue;
+            $event->travelCount = 1 + $diceValue;
             $event->position = $this->getInitialPosition($request->tokenId) + $diceValue;
         }
         //to determine the user is safe or not
