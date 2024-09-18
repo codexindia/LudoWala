@@ -82,7 +82,7 @@ class GameController extends Controller
             $event->tokenId = $token;
             $event->playerId = $newRoom->playerId;
             $event->position = $this->getInitialPositionByPid($newRoom->playerId);
-            $event->travelCount = 1;
+            $event->travelCount = 0;
             $event->save();
         }
 
@@ -151,7 +151,7 @@ class GameController extends Controller
             }
         } else {
             //to determine the initial position of the user
-            $event->travelCount = 1 + $diceValue;
+            $event->travelCount = $diceValue;
             $event->position = $this->getInitialPosition($request->tokenId) + $diceValue;
         }
         //to determine the user is safe or not
