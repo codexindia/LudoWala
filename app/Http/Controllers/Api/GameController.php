@@ -82,7 +82,7 @@ class GameController extends Controller
             $event->tokenId = $token;
             $event->playerId = $newRoom->playerId;
             $event->position = $this->getInitialPositionByPid($newRoom->playerId);
-            $event->travelCount = 0;
+            $event->travelCount = 1;
             $event->save();
         }
 
