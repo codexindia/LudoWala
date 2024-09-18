@@ -137,9 +137,9 @@ class GameController extends Controller
             $event->travelCount = $getLastEvent->travelCount + $diceValue;
             $event->position = $getLastEvent->position + $diceValue;
             //to check if the user crossed 52 position then reset from 1
-            if ($event->position > 52) {
-                $event->position = $event->position - 52;
-            }
+            // if ($event->position > 52) {
+            //     $event->position = $event->position - 52;
+            // }
             Log::info("before".$event->position);
             //entering to wining area and check they complete their travel or not
             if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 50 && $event->position < 220) {
@@ -148,7 +148,7 @@ class GameController extends Controller
                 $event->position = 330 + $diceValue;
             } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 50 && $event->position < 110) {
                 $event->position = 110 + $diceValue;
-            } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 50    && $event->position < 440) {
+            } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 50 && $event->position < 440) {
                 $event->position = 440 +  $diceValue;
             }
         } else {
