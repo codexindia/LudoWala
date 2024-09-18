@@ -174,7 +174,7 @@ class GameController extends Controller
         //check if complete the travel and give another chance
         if($event->travelCount >= 56){
             $nextTurn =  $event->playerId;
-            $event->update(['isWin' => '1']);
+            $event->isWin ='1';
             $event->position += 1;
             $event->save();
         }
