@@ -143,26 +143,15 @@ class GameController extends Controller
             if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 50) {
                 if ($event->position < 220)
                     $event->position = 220 + $diceValue;
-                else
-                    $event->position = $event->position + $diceValue;
             } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount > 50) {
-                if($event->position < 330)
+                if ($event->position < 330)
                     $event->position = 330 + $diceValue;
-                else
-                    $event->position = $event->position + $diceValue;
-               
             } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 50) {
-                if($event->position < 440)
+                if ($event->position < 440)
                     $event->position = 440 + $diceValue;
-                else
-                    $event->position = $event->position + $diceValue;
-             
             } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 50) {
-                if($event->position < 110)
+                if ($event->position < 110)
                     $event->position = 110 + $diceValue;
-                else
-                    $event->position = $event->position + $diceValue;
-                
             }
         } else {
             //to determine the initial position of the user
