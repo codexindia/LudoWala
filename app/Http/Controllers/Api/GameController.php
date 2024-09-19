@@ -18,7 +18,7 @@ class GameController extends Controller
     private $roomId = 'demo123';
     public function joinRoom(Request $request)
     {
-        $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->latest()->first();
+        $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
         // return $checkIfUserJoined;
 
         $players = RoomDetails::where('roomId', $this->roomId)
@@ -133,17 +133,21 @@ class GameController extends Controller
         $event->playerId = $this->getPlayerId($request->tokenId);
         //to determine the position of the user
         if ($getLastEvent) {
-             
+
+
             $event->travelCount = $getLastEvent->travelCount + $diceValue;
             $event->position = $getLastEvent->position + $diceValue;
+            //adjust after big dice value in passing area
+           
+              //need to add implementation 
+
+
             //to check if the user crossed 52 position then reset from 1
-
-
             if ($event->position > 52 && $event->position < 60) {
                 $event->position = $event->position - 52;
             }
 
-            
+
             //Log::info("before".$event->position);
             //entering to wining area and check they complete their travel or not
             if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 50 && $event->position < 220) {
@@ -160,7 +164,7 @@ class GameController extends Controller
             $event->travelCount = $diceValue;
             $event->position = $this->getInitialPosition($request->tokenId) + $diceValue;
         }
-        Log::info("after".$event->position);
+        // Log::info("after" . $event->position);
         //to determine the user is safe or not
         $safePositions = [14, 53, 40, 27, 9, 22, 48, 35];
         $event->isSafe = in_array($event->position, $safePositions) ? '1' : '0';
@@ -181,9 +185,9 @@ class GameController extends Controller
         //check if complete the travel and give another chance
         if ($event->travelCount >= 56) {
             $nextTurn =  $event->playerId;
-              $event->isWin ='1';
-             //$event->position += 1;
-             $event->save();
+            $event->isWin = '1';
+            //$event->position += 1;
+            $event->save();
         }
         //   if ($CheckAnyTokenReturned != true && $diceValue != 6) {
         $changeNext = RoomDetails::where('roomId', $this->roomId)->where('playerId', operator: $nextTurn)->update(['currentTurn' => 1]);
