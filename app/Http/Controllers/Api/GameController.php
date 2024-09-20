@@ -138,8 +138,8 @@ class GameController extends Controller
             $event->travelCount = $getLastEvent->travelCount + $diceValue;
             $event->position = $getLastEvent->position + $diceValue;
             //adjust after big dice value in passing area
-           
-              //need to add implementation 
+
+            //need to add implementation 
 
 
             //to check if the user crossed 52 position then reset from 1
@@ -151,11 +151,14 @@ class GameController extends Controller
             //Log::info("before".$event->position);
             //entering to wining area and check they complete their travel or not
             if ($this->getPlayerId($request->tokenId) == 0 && $event->travelCount > 50 && $event->position < 220) {
-                $event->position = 220 + $diceValue;
+
+                //$event->position = 220 + $diceValue;
             } elseif ($this->getPlayerId($request->tokenId) == 1 && $event->travelCount > 50 && $event->position < 330) {
                 $event->position = 330 + $diceValue;
             } elseif ($this->getPlayerId($request->tokenId) == 2 && $event->travelCount > 50 && $event->position < 110) {
-                $event->position = 110 + $diceValue;
+
+                $event->position = 110 +  $event->position - 51;
+            
             } elseif ($this->getPlayerId($request->tokenId) == 3 && $event->travelCount > 50 && $event->position < 440) {
                 $event->position = 440 +  $diceValue;
             }
