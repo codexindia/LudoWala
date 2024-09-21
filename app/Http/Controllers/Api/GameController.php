@@ -47,7 +47,7 @@ class GameController extends Controller
         if( $lastRoom == null){
             $this->roomId = 'LW' . rand('1000000000', '9999999999');
         }
-         $checkLastRoom = RoomDetails::where('roomId', $lastRoom->roomId)->count();
+         $checkLastRoom = RoomDetails::where('roomId', $lastRoom->roomId??$this->roomId)->count();
            
         if ($checkLastRoom > 3 ) {
             $this->roomId = 'LW' . rand('1000000000', '9999999999');
