@@ -44,9 +44,12 @@ class GameController extends Controller
             ]);
         }
          $lastRoom = RoomDetails::where('roomType', 'tournament')->latest('created_at')->first();
-        $checkLastRoom = RoomDetails::where('roomId', $lastRoom->roomId)->count();
-
-        if ($checkLastRoom > 3) {
+        if( $lastRoom == null){
+            $this->roomId = 'LW' . rand('1000000000', '9999999999');
+        }
+         $checkLastRoom = RoomDetails::where('roomId', $lastRoom->roomId)->count();
+           
+        if ($checkLastRoom > 3 ) {
             $this->roomId = 'LW' . rand('1000000000', '9999999999');
         }
         $setIntialDice = new DiceRolling();
