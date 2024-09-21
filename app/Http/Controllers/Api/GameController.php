@@ -21,18 +21,18 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', 'tournament')->first();
         // return $checkIfUserJoined;
-         $this->roomId = $checkIfUserJoined->roomId??'LW' . rand('1000000000', '9999999999');;
-
+     
         if ($checkIfUserJoined) {
-            $players = RoomDetails::where('roomId', $this->roomId)
+
+            $players = RoomDetails::where('roomId', $checkIfUserJoined->roomId)
                 ->join('users', 'users.id', '=', 'room_details.userId')
                 ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
-            $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
+            $events = BoardEvent::where('roomId', $checkIfUserJoined->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
             //     $this->forwardSocket('roomReJoined', [
             //         'playerId' => $checkIfUserJoined->playerId,
             //         'roomId' => $checkIfUserJoined->roomId
             //    ], $request);
-            $currentTurn = RoomDetails::where('roomId', $this->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
+            $currentTurn = RoomDetails::where('roomId', $checkIfUserJoined->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
             return response()->json([
                 'status' => true,
                 'playerId' => $checkIfUserJoined->playerId,
@@ -43,8 +43,8 @@ class GameController extends Controller
                 'events' => $events,
             ]);
         }
-
-        $checkLastRoom = RoomDetails::where('roomId', $this->roomId)->count();
+         $lastRoom = RoomDetails::where('roomType', 'tournament')->latest('created_at')->first();
+        $checkLastRoom = RoomDetails::where('roomId', $lastRoom->roomId)->count();
 
         if ($checkLastRoom > 3) {
             $this->roomId = 'LW' . rand('1000000000', '9999999999');
