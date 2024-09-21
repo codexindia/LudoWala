@@ -16,15 +16,17 @@ use Illuminate\Support\Facades\Log;
 class GameController extends Controller
 {
     private $roomId = 'demo123';
+
     public function joinRoom(Request $request)
     {
         $checkIfUserJoined = RoomDetails::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
         // return $checkIfUserJoined;
 
-        $players = RoomDetails::where('roomId', $this->roomId)
+       
+        if ($checkIfUserJoined) {
+            $players = RoomDetails::where('roomId', $this->roomId)
             ->join('users', 'users.id', '=', 'room_details.userId')
             ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
-        if ($checkIfUserJoined) {
             $events = BoardEvent::where('roomId', $this->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
             //     $this->forwardSocket('roomReJoined', [
             //         'playerId' => $checkIfUserJoined->playerId,
@@ -86,7 +88,9 @@ class GameController extends Controller
             $event->travelCount = 0;
             $event->save();
         }
-
+        $players = RoomDetails::where('roomId', $this->roomId)
+        ->join('users', 'users.id', '=', 'room_details.userId')
+        ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
         //   $playerData = RoomDetails::where('roomId', $this->roomId)->with('userDetail:fname,lname')->get(['userId', 'playerId']);
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId], $request);
 
