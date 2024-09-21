@@ -19,9 +19,9 @@ class GameController extends Controller
 
     public function joinRoom(Request $request)
     {
-        $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', 'tournament')->first();
+        $tournamentType = 'tournament';
+        $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $tournamentType)->first();
         // return $checkIfUserJoined;
-     
         if ($checkIfUserJoined) {
 
             $players = RoomDetails::where('roomId', $checkIfUserJoined->roomId)
@@ -43,14 +43,12 @@ class GameController extends Controller
                 'events' => $events,
             ]);
         }
-         $lastRoom = RoomDetails::where('roomType', 'tournament')->latest('created_at')->first();
-        if( $lastRoom == null){
-            $this->roomId = 'LW' . rand('1000000000', '9999999999');
-        }
-         $checkLastRoom = RoomDetails::where('roomId', $lastRoom->roomId??$this->roomId)->count();
-           
-        if ($checkLastRoom > 3 ) {
-            $this->roomId = 'LW' . rand('1000000000', '9999999999');
+        $lastRoom = RoomDetails::where('roomType', 'tournament')->latest('created_at')->first();
+       $checkLastRoom =  RoomDetails::where('roomId', $lastRoom->roomId)->count();
+        if ($lastRoom == null ||$checkLastRoom > 3) {
+            $this->roomId = 'LW' . rand(1000000000, 9999999999);
+        } else {
+            $this->roomId = $lastRoom->roomId;
         }
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
@@ -93,8 +91,6 @@ class GameController extends Controller
             ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
         //   $playerData = RoomDetails::where('roomId', $this->roomId)->with('userDetail:fname,lname')->get(['userId', 'playerId']);
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $this->roomId, 'fname' => $request->user()->fname, 'lname' => $request->user()->lname], $request);
-
-
 
         return response()->json([
             'status' => true,
