@@ -21,7 +21,7 @@ class GameController extends Controller
     {
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', 'tournament')->first();
         // return $checkIfUserJoined;
-         $this->roomId = $checkIfUserJoined->roomId??"";
+         $this->roomId = $checkIfUserJoined->roomId??'LW' . rand('1000000000', '9999999999');;
 
         if ($checkIfUserJoined) {
             $players = RoomDetails::where('roomId', $this->roomId)
