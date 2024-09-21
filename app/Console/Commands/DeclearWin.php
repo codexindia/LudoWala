@@ -6,6 +6,7 @@ use ElephantIO\Client;
 use Illuminate\Console\Command;
 use App\Models\BoardEvent;
 use Illuminate\Support\Facades\DB;
+use App\Models\TournamentParticipant;
 class DeclearWin extends Command
 {
     /**
@@ -37,9 +38,11 @@ class DeclearWin extends Command
             ->join('users', 'board_events.userId', '=', 'users.id')
             ->select('board_events.userId','users.fname',  DB::raw('SUM(board_events.travelCount) as totalSteps'))
             ->where('board_events.roomId', $room->roomId)
-            ->groupBy('board_events.userId','users.fname')
+            ->groupBy('board_events.userId','users.fname','board_events.playerId')
             ->orderByDesc('totalSteps')
             ->first();
+
+     
 
             if ($winner) {
                 // Update the player's status to indicate they have won
@@ -48,7 +51,12 @@ class DeclearWin extends Command
                     ->where('userId', $winner->userId)
                     ->update(['isWin' => '1']);
 
-                $this->info('Player '.$winner->fname.' with userId ' . $winner->userId . ' has been declared the winner for room ' . $room->roomId . ' with ' . $winner->totalSteps . ' steps.');
+                    //temp
+                    TournamentParticipant::where('tournamentId',2)->where('userId','=',$winner->userId)->update(['winCount' => 1,'roundsPlayed' => 1]);
+                    TournamentParticipant::where('tournamentId',2)->where(['winCount' => 0,'roundsPlayed' => 0])->delete();
+                 
+                //endtemp
+                    $this->info('Player '.$winner->fname.' with userId ' . $winner->userId . ' has been declared the winner for room ' . $room->roomId . ' with ' . $winner->totalSteps . ' steps.');
           $this->sendSocketEvent($room->roomId, $winner);
             } else {
                 $this->info('No players found for room ' . $room->roomId . '.');
