@@ -167,7 +167,7 @@ class GameController extends Controller
         }
         // Log::info("after" . $event->position);
         //to determine the user is safe or not
-        $safePositions = [14, 53, 40, 27, 9, 22, 48, 35];
+        $safePositions = [14, 1, 40, 27, 9, 22, 48, 35];
         $event->isSafe = in_array($event->position, $safePositions) ? '1' : '0';
         $event->save();
         //to determine the next turn
