@@ -24,7 +24,7 @@ class changeTurn extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Change TimeOut By 30 sec';
     protected $socketAdminKey;
     
     /**
