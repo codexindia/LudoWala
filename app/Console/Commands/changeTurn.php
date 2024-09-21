@@ -36,8 +36,7 @@ class changeTurn extends Command
         $now = Carbon::now();
 
         // Fetch games where the last move was made more than 30 seconds ago
-        $timeoutGames = DB::table('dice_rollings')
-            ->where('currentTurn', 1)
+        $timeoutGames = RoomDetails::where('currentTurn', 1)
             ->where('updated_at', '<', $now->copy()->subSeconds($timeout))
             ->get();
         //die($now->subSeconds($timeout));
