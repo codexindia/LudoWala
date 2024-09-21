@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-         $schedule->command(changeTurn::class)->everyThirtySeconds();
+         $schedule->command(changeTurn::class)->everyTwentySeconds();
     }
 
     /**
