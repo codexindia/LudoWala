@@ -46,14 +46,14 @@ class DeclearWin extends Command
 
             if ($winner) {
                 // Update the player's status to indicate they have won
-                DB::table('board_events')
-                    ->where('roomId', $room->roomId)
-                    ->where('userId', $winner->userId)
-                    ->update(['isWin' => '1']);
+                // DB::table('board_events')
+                //     ->where('roomId', $room->roomId)
+                //     ->where('userId', $winner->userId)
+                //     ->update(['isWin' => '1']);
 
                     //temp
-                    TournamentParticipant::where('tournamentId',2)->where('userId','=',$winner->userId)->update(['winCount' => 1,'roundsPlayed' => 1]);
-                    TournamentParticipant::where('tournamentId',2)->where(['winCount' => 0,'roundsPlayed' => 0])->delete();
+               //     TournamentParticipant::where('tournamentId',2)->where('userId','=',$winner->userId)->update(['winCount' => 1,'roundsPlayed' => 1]);
+                   // TournamentParticipant::where('tournamentId',2)->where(['winCount' => 0,'roundsPlayed' => 0])->delete();
                  
                 //endtemp
                     $this->info('Player '.$winner->fname.' with userId ' . $winner->userId . ' has been declared the winner for room ' . $room->roomId . ' with ' . $winner->totalSteps . ' steps.');
