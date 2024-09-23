@@ -49,7 +49,7 @@ class GameController extends Controller
             $roomId = 'LW' . rand(1000000000, 9999999999);
         } else {
             $checkLastRoom =  RoomDetails::where('roomId', $lastRoom->roomId)->count();
-            if ($checkLastRoom > 3) {
+            if ($checkLastRoom  >= 4) {
                 $roomId = 'LW' . rand(1000000000, 9999999999);
             } else {
                 $roomId = $lastRoom->roomId;
@@ -58,7 +58,7 @@ class GameController extends Controller
         
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
-        if (isset($checkLastRoom) && $checkLastRoom < 3) {
+        if (isset($checkLastRoom) && $checkLastRoom < 4) {
             $newRoom->playerId = $checkLastRoom;
             //to give first chance to player id 0
             $setIntialDice->currentTurn = 0;
