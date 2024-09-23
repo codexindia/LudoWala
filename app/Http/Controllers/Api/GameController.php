@@ -55,7 +55,7 @@ class GameController extends Controller
                 $roomId = $lastRoom->roomId;
             }
         }
-        $roomId = 'demo123';
+        
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
         if (isset($checkLastRoom) && $checkLastRoom != null) {
