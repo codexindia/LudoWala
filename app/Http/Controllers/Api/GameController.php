@@ -19,6 +19,7 @@ class GameController extends Controller
 
     public function joinRoom(Request $request)
     {
+        return false;
         $tournamentType = 'tournament';
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $tournamentType)->first();
         // return $checkIfUserJoined;
