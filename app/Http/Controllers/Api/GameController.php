@@ -58,7 +58,7 @@ class GameController extends Controller
         
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
-        if (isset($checkLastRoom) && $checkLastRoom != null) {
+        if (isset($checkLastRoom) && $checkLastRoom != 3) {
             $newRoom->playerId = $checkLastRoom;
             //to give first chance to player id 0
             $setIntialDice->currentTurn = 0;
