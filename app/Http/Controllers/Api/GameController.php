@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class GameController extends Controller
 {
-    private $roomId = 'demo123';
+    private $roomId;
 
     public function joinRoom(Request $request)
     {
@@ -43,12 +43,16 @@ class GameController extends Controller
                 'events' => $events,
             ]);
         }
-        $lastRoom = RoomDetails::where('roomType', 'tournament')->latest('created_at')->first();
-       $checkLastRoom =  RoomDetails::where('roomId', $lastRoom->roomId)->count();
-        if ($lastRoom == null ||$checkLastRoom > 3) {
-            $this->roomId = 'LW' . rand(1000000000, 9999999999);
+        $lastRoom = RoomDetails::where(column: 'roomType', operator: 'tournament')->latest('created_at')->first();
+        if ($lastRoom == null) {
+            $roomId = 'LW' . rand(1000000000, 9999999999);
         } else {
-            $this->roomId = $lastRoom->roomId;
+            $checkLastRoom =  RoomDetails::where('roomId',$lastRoom->roomId)->count();
+            if ($checkLastRoom > 3) {
+                $roomId = 'LW' . rand(1000000000, 9999999999);
+            } else {
+                $roomId = $lastRoom->roomId;
+            }
         }
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
@@ -62,7 +66,7 @@ class GameController extends Controller
             //to give first chance to player id 0
             $setIntialDice->currentTurn = 1;
         }
-        $newRoom->roomId = $this->roomId;
+        $newRoom->roomId = $roomId;
         $newRoom->userId = $request->user()->id;
         $newRoom->save();
 
@@ -70,7 +74,7 @@ class GameController extends Controller
         //set intial dice value
         $setIntialDice->userId = $request->user()->id;
         $setIntialDice->playerId = $newRoom->playerId;
-        $setIntialDice->roomId = $this->roomId;
+        $setIntialDice->roomId = $roomId;
 
 
         $setIntialDice->save();
@@ -79,14 +83,14 @@ class GameController extends Controller
         foreach ($this->getTokenByPid($newRoom->playerId) as $token) {
             $event = new BoardEvent();
             $event->userId = $request->user()->id;
-            $event->roomId = $this->roomId;
+            $event->roomId = $roomId;
             $event->tokenId = $token;
             $event->playerId = $newRoom->playerId;
             $event->position = $this->getInitialPositionByPid($newRoom->playerId);
             $event->travelCount = 0;
             $event->save();
         }
-        $players = RoomDetails::where('roomId', $this->roomId)
+        $players = RoomDetails::where('roomId', $roomId)
             ->join('users', 'users.id', '=', 'room_details.userId')
             ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
         //   $playerData = RoomDetails::where('roomId', $this->roomId)->with('userDetail:fname,lname')->get(['userId', 'playerId']);
@@ -97,7 +101,7 @@ class GameController extends Controller
             'players' => $players,
             'playerId' => $newRoom->playerId,
             // 'events' => $events,
-            'roomId' => $this->roomId,
+            'roomId' => $roomId,
             'message' => 'Room Joined Successfully',
         ]);
     }
