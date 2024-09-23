@@ -101,7 +101,7 @@ class GameController extends Controller
             'players' => $players,
             'playerId' => $newRoom->playerId,
             // 'events' => $events,
-            'roomId' => 'abc123',
+            'roomId' => 'demo123',
             'message' => 'Room Joined Successfully',
         ]);
     }
