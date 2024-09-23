@@ -19,7 +19,7 @@ class GameController extends Controller
 
     public function joinRoom(Request $request)
     {
-     //   return false;
+        //   return false;
         $tournamentType = 'tournament';
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $tournamentType)->first();
         // return $checkIfUserJoined;
@@ -48,14 +48,14 @@ class GameController extends Controller
         if ($lastRoom == null) {
             $roomId = 'LW' . rand(1000000000, 9999999999);
         } else {
-            $checkLastRoom =  RoomDetails::where('roomId',$lastRoom->roomId)->count();
+            $checkLastRoom =  RoomDetails::where('roomId', $lastRoom->roomId)->count();
             if ($checkLastRoom > 3) {
                 $roomId = 'LW' . rand(1000000000, 9999999999);
             } else {
                 $roomId = $lastRoom->roomId;
             }
         }
-        $roomId='demo123';
+        $roomId = 'demo123';
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
         if (isset($checkLastRoom) && $checkLastRoom != null) {
