@@ -24,15 +24,11 @@ class GameController extends Controller
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
         // return $checkIfUserJoined;
         if ($checkIfUserJoined) {
-
             $players = RoomDetails::where('roomId', $checkIfUserJoined->roomId)
                 ->join('users', 'users.id', '=', 'room_details.userId')
                 ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
             $events = BoardEvent::where('roomId', $checkIfUserJoined->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
-            //     $this->forwardSocket('roomReJoined', [
-            //         'playerId' => $checkIfUserJoined->playerId,
-            //         'roomId' => $checkIfUserJoined->roomId
-            //    ], $request);
+          
             $currentTurn = RoomDetails::where('roomId', $checkIfUserJoined->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
             return response()->json([
                 'status' => true,
@@ -55,7 +51,7 @@ class GameController extends Controller
                 $roomId = $lastRoom->roomId;
             }
         }
-        
+
         $setIntialDice = new DiceRolling();
         $newRoom = new RoomDetails();
         if (isset($checkLastRoom) && $checkLastRoom < 4) {
@@ -102,7 +98,7 @@ class GameController extends Controller
             'status' => true,
             'players' => $players,
             'playerId' => $newRoom->playerId,
-             'events' => $events,
+            'events' => $events,
             'roomId' => $roomId,
             'message' => 'Room Joined Successfully',
         ]);
