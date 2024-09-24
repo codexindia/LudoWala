@@ -38,7 +38,7 @@ class DeclearWin extends Command
             ->distinct()
             ->get();
 
-        $tournamentId = 1;
+        $tournamentId = 2;
         $tournament = Tournaments::where('id', $tournamentId)->first();
         $tournament->nextRoundTime = Carbon::now()->addMinutes(5)->toDateTimeString();
         $tournament->currentRound += 1;
@@ -53,7 +53,7 @@ class DeclearWin extends Command
                 ->orderByDesc('totalSteps')
                 ->first();
 
-            $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)->whereNot('room_details.userId', $winner->userId)
+            $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)->where('room_details.userId','!=', $winner->userId)
                 ->leftJoin('users', 'room_details.userId', '=', 'users.id')
                 ->leftJoin('board_events', 'board_events.roomId', '=', 'room_details.roomId')
                 ->select('board_events.userId', 'users.fname','board_events.playerId' ,DB::raw('SUM(board_events.travelCount) as totalSteps'))
