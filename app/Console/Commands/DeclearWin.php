@@ -54,8 +54,8 @@ class DeclearWin extends Command
                 ->first();
 
             $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)->whereNot('room_details.userId', $winner->userId)
-                ->leftJoin('users', 'room_details.userId', '=', 'users.id')
-                ->leftJoin('board_events', 'board_events.userId', '=', 'users.id')
+                ->rightJoin('users', 'room_details.userId', '=', 'users.id')
+                ->leftJoin('board_events', 'board_events.userId', '=', 'room_details.id')
                 ->select('room_details.userId', 'users.fname','room_details.playerId' ,DB::raw('SUM(board_events.travelCount) as totalSteps'))
                 ->get();
 
