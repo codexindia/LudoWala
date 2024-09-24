@@ -61,12 +61,8 @@ class DeclearWin extends Command
                     DB::raw('SUM(board_events.travelCount) AS totalSteps')
                 )
                 ->leftJoin('users', 'users.id', '=', 'board_events.userId')
-                ->whereNotIn('board_events.userId', function (Builder $query) {
-                    $query->select('userId')
-                        ->from('board_events')
-                        ->where('isWin', '1');
-                })
-                ->where('board_events.userId', '!=', '480')
+                
+                ->where('board_events.userId', '!=', $winner->userId)
                 ->groupBy('board_events.userId')
                 ->get();
 
