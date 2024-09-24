@@ -52,13 +52,13 @@ class DeclearWin extends Command
                 ->groupBy('board_events.userId', 'users.fname', 'board_events.playerId')
                 ->orderByDesc('totalSteps')
                 ->first();
-
+              
                 $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)
                 ->where('room_details.userId', '!=', $winner->userId)
                 ->leftJoin('users', 'room_details.userId', '=', 'users.id')
                 ->leftJoin('board_events', 'board_events.roomId', '=', 'room_details.roomId')
-                ->selectRaw('board_events.userId, GROUP_CONCAT(DISTINCT users.fname) as fname, SUM(board_events.travelCount) as totalSteps')
-                ->groupBy('board_events.userId')
+                ->selectRaw('board_events.userId, users.fname, SUM(board_events.travelCount) as totalSteps')
+                ->groupBy('board_events.userId', 'users.fname')
                 ->get();
 
             if ($winner) {
