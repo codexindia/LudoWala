@@ -38,7 +38,7 @@ class DeclearWin extends Command
             ->distinct()
             ->get();
 
-        $tournamentId = 2;
+        $tournamentId = 5;
         $tournament = Tournaments::where('id', $tournamentId)->first();
         $tournament->nextRoundTime = Carbon::now()->addMinutes(5)->toDateTimeString();
         $tournament->currentRound += 1;
