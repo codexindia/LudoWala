@@ -58,7 +58,7 @@ class DeclearWin extends Command
                 $eliminatedPlayers = BoardEvent::select(
                     'board_events.userId',
                     'users.fname',
-                    DB::raw('SUM(board_events.travelCount) AS total_travel_count')
+                    DB::raw('SUM(board_events.travelCount) AS totalSteps')
                 )
                 ->leftJoin('users', 'users.id', '=', 'board_events.userId')
                 ->whereNotIn('board_events.userId', function (Builder $query) {
