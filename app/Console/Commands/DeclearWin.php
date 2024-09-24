@@ -7,7 +7,9 @@ use Illuminate\Console\Command;
 use App\Models\BoardEvent;
 use App\Models\DiceRolling;
 use App\Models\RoomDetails;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+
 use App\Models\TournamentParticipant;
 use App\Models\Tournaments;
 use Carbon\Carbon;
@@ -53,12 +55,19 @@ class DeclearWin extends Command
                 ->orderByDesc('totalSteps')
                 ->first();
               
-                $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)
-                ->where('room_details.userId', '!=', $winner->userId)
-                ->leftJoin('users', 'room_details.userId', '=', 'users.id')
-                ->leftJoin('board_events', 'board_events.roomId', '=', 'room_details.roomId')
-                ->selectRaw('board_events.userId, users.fname, SUM(board_events.travelCount) as totalSteps')
-                ->groupBy('board_events.userId', 'users.fname')
+                $eliminatedPlayers = BoardEvent::select(
+                    'board_events.userId',
+                    'users.fname',
+                    DB::raw('SUM(board_events.travelCount) AS total_travel_count')
+                )
+                ->leftJoin('users', 'users.id', '=', 'board_events.userId')
+                ->whereNotIn('board_events.userId', function (Builder $query) {
+                    $query->select('userId')
+                        ->from('board_events')
+                        ->where('isWin', '1');
+                })
+                ->where('board_events.userId', '!=', '480')
+                ->groupBy('board_events.userId')
                 ->get();
 
             if ($winner) {
