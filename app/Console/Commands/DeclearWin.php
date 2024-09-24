@@ -57,13 +57,14 @@ class DeclearWin extends Command
               
                 $eliminatedPlayers = BoardEvent::select(
                     'board_events.userId',
+                    'board_events.playerId',
                     'users.fname',
                     DB::raw('SUM(board_events.travelCount) AS totalSteps')
                 )
                 ->leftJoin('users', 'users.id', '=', 'board_events.userId')
                 
                 ->where('board_events.userId', '!=', $winner->userId)
-                ->groupBy('board_events.userId')
+                ->groupBy('board_events.userId','board_events.playerId')
                 ->get();
 
             if ($winner) {
