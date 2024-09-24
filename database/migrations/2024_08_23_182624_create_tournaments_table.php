@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('maxPlayers');
             $table->integer('totalRound');
             $table->integer('roundInterval');
-            $table->integer('currentRound')->default(0);
+            $table->integer('currentRound')->default(1);
             $table->dateTime('registrationStartTime')->useCurrent();
             $table->dateTime('registrationEndTime');
             $table->dateTime('startTime');

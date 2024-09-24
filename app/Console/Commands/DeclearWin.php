@@ -5,9 +5,12 @@ namespace App\Console\Commands;
 use ElephantIO\Client;
 use Illuminate\Console\Command;
 use App\Models\BoardEvent;
+use App\Models\DiceRolling;
 use App\Models\RoomDetails;
 use Illuminate\Support\Facades\DB;
 use App\Models\TournamentParticipant;
+use App\Models\Tournaments;
+use Carbon\Carbon;
 
 class DeclearWin extends Command
 {
@@ -34,17 +37,23 @@ class DeclearWin extends Command
             ->select('roomId')
             ->distinct()
             ->get();
+
+        $tournamentId = 1;
+        $tournament = Tournaments::where('id', $tournamentId)->first();
+        $tournament->nextRoundTime = Carbon::now()->addMinutes(5)->toDateTimeString();
+        $tournament->currentRound += 1;
+        $tournament->save();
         foreach ($rooms as $room) {
             // Fetch the player with the maximum steps for the current room
             $winner = DB::table('board_events')
                 ->join('users', 'board_events.userId', '=', 'users.id')
-                ->select('board_events.userId','board_events.playerId', 'users.fname',  DB::raw('SUM(board_events.travelCount) as totalSteps'))
+                ->select('board_events.userId', 'board_events.playerId', 'users.fname',  DB::raw('SUM(board_events.travelCount) as totalSteps'))
                 ->where('board_events.roomId', $room->roomId)
                 ->groupBy('board_events.userId', 'users.fname', 'board_events.playerId')
                 ->orderByDesc('totalSteps')
                 ->first();
-             
-                $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)->whereNot('room_details.userId', $winner->userId)
+
+            $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)->whereNot('room_details.userId', $winner->userId)
                 ->join('users', 'room_details.userId', '=', 'users.id')
                 ->join('board_events', 'board_events.userId', '=', 'users.id')
                 ->select('room_details.userId', 'users.fname')
@@ -52,21 +61,29 @@ class DeclearWin extends Command
 
 
             if ($winner) {
-              
+
                 //temp need to edit tid
-                $changeStatus = TournamentParticipant::where('tournamentId', 1)->where('userId', '=', $winner->userId)->first();
+                $changeStatus = TournamentParticipant::where('tournamentId', $tournamentId)->where('userId', '=', $winner->userId)->first();
                 $changeStatus->winCount += 1;
                 $changeStatus->roundsPlayed += 1;
                 $changeStatus->save();
-                
+
+          //change next tournament round time 
+        
+
+
+                $deleteBoardEvent = BoardEvent::where('roomId', $room->roomId)->delete();
+                $deleteRoomDetails = RoomDetails::where('roomId', $room->roomId)->delete();
+                $deleteDice = DiceRolling::where('roomId', $room->roomId)->delete();
+
                 // TournamentParticipant::where('tournamentId',2)->where(['winCount' => 0,'roundsPlayed' => 0])->delete();
 
                 //endtemp
                 $this->info('Player ' . $winner->fname . ' with userId ' . $winner->userId . ' has been declared the winner for room ' . $room->roomId . ' with ' . $winner->totalSteps . ' steps.');
-              
+
                 // echo $winner;
                 $winner->eliminatedPlayers = $eliminatedPlayers;
-             //   $this->info($winner);
+                //   $this->info($winner);
                 $this->sendSocketEvent($room->roomId, $winner);
             } else {
                 $this->info('No players found for room ' . $room->roomId . '.');
@@ -88,7 +105,7 @@ class DeclearWin extends Command
         $client->connect();
         $client->emit('sendMessage', [
             'winnerBoard' => $data,
-            
+
         ]);
         $client->disconnect();
     }
