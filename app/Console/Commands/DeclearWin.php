@@ -57,7 +57,7 @@ class DeclearWin extends Command
                 ->rightJoin('users', 'room_details.userId', '=', 'users.id')
                 ->leftJoin('board_events', 'board_events.userId', '=', 'room_details.id')
                 ->select('room_details.userId', 'users.fname','room_details.playerId' ,DB::raw('SUM(board_events.travelCount) as totalSteps'))
-                ->groupBy('room_details.userId','board_events.userId', 'users.fname', 'board_events.playerId')
+                ->groupBy('room_details.userId','board_events.userId', 'users.fname', 'board_events.playerId','room_details.playerId')
                 ->get();
 
 
