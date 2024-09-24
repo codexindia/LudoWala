@@ -64,7 +64,7 @@ class TournamentManager extends Controller
             $joinNew->userId = $request->user()->id;
             $joinNew->tournamentId = $request->tournament_id;
             $joinNew->winCount = 0;
-            $joinNew->roundsPlayed = 0;
+            $joinNew->roundsPlayed = 1;
             $joinNew->save();
             return response()->json([
                 'status' => true,
