@@ -54,9 +54,9 @@ class DeclearWin extends Command
                 ->first();
 
             $eliminatedPlayers = RoomDetails::where('room_details.roomId', $room->roomId)->whereNot('room_details.userId', $winner->userId)
-                ->join('users', 'room_details.userId', '=', 'users.id')
-                ->join('board_events', 'board_events.userId', '=', 'users.id')
-                ->select('room_details.userId', 'users.fname')
+                ->leftJoin('users', 'room_details.userId', '=', 'users.id')
+                ->leftJoin('board_events', 'board_events.userId', '=', 'users.id')
+                ->select('room_details.userId', 'users.fname','room_details.playerId' ,DB::raw('SUM(board_events.travelCount) as totalSteps'))
                 ->get();
 
 
@@ -70,8 +70,6 @@ class DeclearWin extends Command
 
           //change next tournament round time 
         
-
-
                 $deleteBoardEvent = BoardEvent::where('roomId', $room->roomId)->delete();
                 $deleteRoomDetails = RoomDetails::where('roomId', $room->roomId)->delete();
                 $deleteDice = DiceRolling::where('roomId', $room->roomId)->delete();
