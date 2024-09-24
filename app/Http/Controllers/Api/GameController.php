@@ -94,12 +94,14 @@ class GameController extends Controller
         //   $playerData = RoomDetails::where('roomId', $this->roomId)->with('userDetail:fname,lname')->get(['userId', 'playerId']);
         $this->forwardSocket('roomJoined', ['playerId' => $newRoom->playerId, 'roomId' => $roomId, 'fname' => $request->user()->fname, 'lname' => $request->user()->lname], $request);
         $events = BoardEvent::where('roomId', $roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
+        $currentTurn = RoomDetails::where('roomId', $roomId)->where('currentTurn', 1)->first('playerId')->playerId;
         return response()->json([
             'status' => true,
             'players' => $players,
             'playerId' => $newRoom->playerId,
             'events' => $events,
             'roomId' => $roomId,
+            'currentTurn' => $newRoom->playerId,
             'message' => 'Room Joined Successfully',
         ]);
     }
