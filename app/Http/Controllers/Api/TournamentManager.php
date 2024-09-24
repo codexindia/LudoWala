@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Tournaments; // Add this line to import the Tournament class
 use App\Models\TournamentParticipant; // Add this line to import the TournamentParticipant class
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 class TournamentManager extends Controller
 {
     public function getTournamentList(Request $request)
@@ -14,9 +15,9 @@ class TournamentManager extends Controller
         $userId = $request->user()->id;
         $tournament = Tournaments::withCount('participants')
             ->withExists(['participants as userJoined' => function ($query) use ($userId) {
-                $query->where('userId', $userId);
+                $query->where('userId', $userId)
+                ->where('roundsPlayed', DB::raw('tournaments.currentRound'));
             }])->get();
-            ;
             $tournament[0]['participants_count'] += $this->getFakeTotal();
         return response()->json([
             'status' => true,
