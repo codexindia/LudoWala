@@ -15,9 +15,15 @@ class TournamentManager extends Controller
         $userId = $request->user()->id;
         $tournament = Tournaments::withCount('participants')
             ->withExists(['participants as userJoined' => function ($query) use ($userId) {
+                $query->where('userId', $userId);
+                
+            }])
+            ->withExists(['participants as eliminated' => function ($query) use ($userId) {
+                // Check if the user is eliminated by seeing if roundsPlayed != currentRound
                 $query->where('userId', $userId)
-                ->where('roundsPlayed', DB::raw('tournaments.currentRound'));
-            }])->get();
+                      ->where('roundsPlayed', '!=', DB::raw('tournaments.currentRound'));
+            }])
+            ->get();
             $tournament[0]['participants_count'] += $this->getFakeTotal();
         return response()->json([
             'status' => true,
