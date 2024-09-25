@@ -25,14 +25,14 @@ class GameController extends Controller
         $gameType = 'tournament';
         if($gameType == "tournament")
         {
-            $tournamentId = 5;
+            $tournamentId = 2;
             $tournament = Tournaments::where('id', $tournamentId)->first();
             $endTime = null;
             if($tournament->currentRound == 1)
             {
-                $endTime = Carbon::parse($tournament->startTime)->addMinutes(6);
+                $endTime = Carbon::parse($tournament->startTime)->addMinutes(10);
             }else{
-                $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(6);
+                $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10);
             }
         }
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
