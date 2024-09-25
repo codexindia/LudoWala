@@ -54,18 +54,26 @@ class DeclearWin extends Command
                 ->groupBy('board_events.userId', 'users.fname', 'board_events.playerId')
                 ->orderByDesc('totalSteps')
                 ->first();
-              
-                $eliminatedPlayers = BoardEvent::select(
-                    'board_events.userId',
-                    'board_events.playerId',
-                    'users.fname',
-                    DB::raw('SUM(board_events.travelCount) AS totalSteps')
-                )
+
+            $eliminatedPlayers = BoardEvent::select(
+                'board_events.userId',
+                'board_events.playerId',
+                'users.fname',
+                DB::raw('SUM(board_events.travelCount) AS totalSteps')
+            )
                 ->leftJoin('users', 'users.id', '=', 'board_events.userId')
-                
                 ->where('board_events.userId', '!=', $winner->userId)
-                ->groupBy('board_events.userId','board_events.playerId')
+                ->groupBy('board_events.userId', 'board_events.playerId')
                 ->get();
+            //  if($tournament->currentRound == 3)
+            //  {
+            //     creditBal($winner->userId, $tournament['2ndRoundWinning'], 0, "winning_wallet", "Tournament 2nd Round Winning");
+            //     foreach($eliminatedPlayers->userId as $eliminatedIds)
+            //     {
+            //         creditBal($eliminatedIds->userId, $tournament['2ndRoundWinning'], 0, "winning_wallet", "Tournament 2nd Round Winning");
+            
+            //     }
+            // }
 
             if ($winner) {
 
@@ -75,8 +83,8 @@ class DeclearWin extends Command
                 $changeStatus->roundsPlayed += 1;
                 $changeStatus->save();
 
-          //change next tournament round time 
-        
+                //change next tournament round time 
+
                 $deleteBoardEvent = BoardEvent::where('roomId', $room->roomId)->delete();
                 $deleteRoomDetails = RoomDetails::where('roomId', $room->roomId)->delete();
                 $deleteDice = DiceRolling::where('roomId', $room->roomId)->delete();

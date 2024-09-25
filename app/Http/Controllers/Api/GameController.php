@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\DiceRolling;
 use App\Models\RoomDetails;
+use App\Models\Tournaments;
+use Carbon\Carbon;
 use ElephantIO\Engine\SocketIO\Version3X;
 use Illuminate\Http\Request;
 use ElephantIO\Client;
@@ -21,6 +23,18 @@ class GameController extends Controller
     {
         //   return false;
         $gameType = 'tournament';
+        if($gameType == "tournament")
+        {
+            $tournamentId = 5;
+            $tournament = Tournaments::where('id', $tournamentId)->first();
+            $endTime = null;
+            if($tournament->currentRound == 1)
+            {
+                $endTime = Carbon::parse($tournament->startTime)->addMinutes(6);
+            }else{
+                $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(6);
+            }
+        }
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
         // return $checkIfUserJoined;
         if ($checkIfUserJoined) {
@@ -38,6 +52,7 @@ class GameController extends Controller
                 'players' => $players,
                 'message' => 'User Already Joined the Room',
                 'events' => $events,
+                'endTime' =>  $endTime
             ]);
         }
         $lastRoom = RoomDetails::where(column: 'roomType', operator: 'tournament')->latest('created_at')->first();
@@ -102,6 +117,7 @@ class GameController extends Controller
             'events' => $events,
             'roomId' => $roomId,
             'currentTurn' => $newRoom->playerId,
+            'endTime' =>  $endTime,
             'message' => 'Room Joined Successfully',
         ]);
     }
