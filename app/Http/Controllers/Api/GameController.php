@@ -24,25 +24,23 @@ class GameController extends Controller
     {
         //   return false;
         $gameType = 'tournament';
-        if($gameType == "tournament")
-        {
-            $tournamentId = 6;
+        if ($gameType == "tournament") {
+            $tournamentId = 1;
             $tournament = Tournaments::where('id', $tournamentId)->first();
             $endTime = null;
-            if($tournament->currentRound == 1)
-            {
+            if ($tournament->currentRound == 1) {
                 $endTime = Carbon::parse($tournament->startTime)->addMinutes(10)->toDateTimeString();
-            }else{
+            } else {
                 $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
             }
             $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
-    //   if($tournamentParticipant->roundPlayed != $tournament->currentRound)
-    //   {
-    //       return response()->json([
-    //           'status' => false,
-    //           'message' => 'You are not eligible to join this round',
-    //       ]);
-    //   }
+
+            if ($tournamentParticipant->roundsPlayed != $tournament->currentRound) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You are not eligible to join this round',
+                ]);
+            }
         }
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
         // return $checkIfUserJoined;
@@ -51,7 +49,7 @@ class GameController extends Controller
                 ->join('users', 'users.id', '=', 'room_details.userId')
                 ->get(['room_details.userId', 'room_details.playerId', 'users.fname', 'users.lname']);
             $events = BoardEvent::where('roomId', $checkIfUserJoined->roomId)->get(['userId', 'tokenId', 'playerId', 'position', 'travelCount']);
-          
+
             $currentTurn = RoomDetails::where('roomId', $checkIfUserJoined->roomId)->where('currentTurn', 1)->first('playerId')->playerId;
             return response()->json([
                 'status' => true,
