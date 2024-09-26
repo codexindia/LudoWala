@@ -36,13 +36,13 @@ class GameController extends Controller
                 $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
             }
             $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
-      if($tournamentParticipant->roundPlayed != $tournament->currentRound)
-      {
-          return response()->json([
-              'status' => false,
-              'message' => 'You are not eligible to join this round',
-          ]);
-      }
+    //   if($tournamentParticipant->roundPlayed != $tournament->currentRound)
+    //   {
+    //       return response()->json([
+    //           'status' => false,
+    //           'message' => 'You are not eligible to join this round',
+    //       ]);
+    //   }
         }
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
         // return $checkIfUserJoined;
