@@ -25,7 +25,7 @@ class GameController extends Controller
         $gameType = 'tournament';
         if($gameType == "tournament")
         {
-            $tournamentId = 2;
+            $tournamentId = 6;
             $tournament = Tournaments::where('id', $tournamentId)->first();
             $endTime = null;
             if($tournament->currentRound == 1)
