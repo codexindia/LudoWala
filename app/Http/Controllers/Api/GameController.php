@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\DiceRolling;
 use App\Models\RoomDetails;
+use App\Models\TournamentParticipant;
 use App\Models\Tournaments;
 use Carbon\Carbon;
 use ElephantIO\Engine\SocketIO\Version3X;
@@ -34,6 +35,14 @@ class GameController extends Controller
             }else{
                 $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
             }
+            $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
+      if($tournamentParticipant->roundPlayed != $tournament->currentRound)
+      {
+          return response()->json([
+              'status' => false,
+              'message' => 'You are not eligible to join this round',
+          ]);
+      }
         }
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
         // return $checkIfUserJoined;
