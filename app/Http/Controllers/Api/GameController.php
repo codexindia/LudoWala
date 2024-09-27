@@ -23,36 +23,36 @@ class GameController extends Controller
     public function joinRoom(Request $request)
     {
         //   return false;
-        $gameType = 'tournament';
-        if ($gameType == "tournament") {
-            $tournamentId = 7;
-            $tournament = Tournaments::where('id', $tournamentId)->first();
-            $endTime = null;
-            if ($tournament->currentRound == 1) {
-                $endTime = Carbon::parse($tournament->startTime)->addMinutes(10)->toDateTimeString();
-            } else {
-                $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
-            }
-            $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
-           if(!Carbon::now()->isAfter($tournament->startTime))
-            {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tournament not started yet',
-                ]);
-            }
-            if(!$tournamentParticipant)
-            {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You are not  join this Tournament',
-                ]);
-            }
-            if ($tournamentParticipant->roundsPlayed != $tournament->currentRound) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You are not eligible to join this round',
-                ]);
+        if ($request->has('tournamentId')) {
+            $gameType = 'tournament';
+            if ($gameType == "tournament") {
+                $tournamentId = $request->tournamentId;
+                $tournament = Tournaments::where('id', $tournamentId)->first();
+                $endTime = null;
+                if ($tournament->currentRound == 1) {
+                    $endTime = Carbon::parse($tournament->startTime)->addMinutes(10)->toDateTimeString();
+                } else {
+                    $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
+                }
+                $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
+                if (!Carbon::now()->isAfter($tournament->currentRound == 1 ? $tournament->startTime : $tournament->nextRoundTime)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Tournament not started yet',
+                    ]);
+                }
+                if (!$tournamentParticipant) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'You are not  join this Tournament',
+                    ]);
+                }
+                if ($tournamentParticipant->roundsPlayed != $tournament->currentRound) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'You are not eligible to join this round',
+                    ]);
+                }
             }
         }
         $checkIfUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', $gameType)->first();
