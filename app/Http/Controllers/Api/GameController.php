@@ -34,7 +34,7 @@ class GameController extends Controller
                 $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
             }
             $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
-           if($tournament->startTime > Carbon::now())
+           if(!Carbon::now()->isAfter($tournament->startTime))
             {
                 return response()->json([
                     'status' => false,
