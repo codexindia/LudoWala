@@ -292,9 +292,12 @@ class GameController extends Controller
             // 'roomId' => 'required',
             'playerId' => 'required|in:0,1,2,3',
         ]);
+       
+        $diceValue = rand(1, 6);
+        //for sudipto
         if($request->user()->id == 480)
         $diceValue = rand(5, 6);
-        $diceValue = rand(1, 6);
+    //for sudipto
         $checkUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', 'tournament')->first();
         $this->roomId = $checkUserJoined->roomId;
         $diceModel = DiceRolling::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
