@@ -25,7 +25,7 @@ class GameController extends Controller
         //   return false;
         $gameType = 'tournament';
         if ($gameType == "tournament") {
-            $tournamentId = 1;
+            $tournamentId = 7;
             $tournament = Tournaments::where('id', $tournamentId)->first();
             $endTime = null;
             if ($tournament->currentRound == 1) {
@@ -34,7 +34,20 @@ class GameController extends Controller
                 $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
             }
             $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
-
+           if($tournament->startTime > Carbon::now())
+            {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tournament not started yet',
+                ]);
+            }
+            if(!$tournamentParticipant)
+            {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You are not  join this Tournament',
+                ]);
+            }
             if ($tournamentParticipant->roundsPlayed != $tournament->currentRound) {
                 return response()->json([
                     'status' => false,

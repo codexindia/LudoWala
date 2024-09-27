@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('roomId');
             $table->integer('playerId');
+            $table->integer('tournamentId')->nullable();
             $table->enum('roomType', ['tournament', 'classic'])->default('tournament');
             $table->unsignedBigInteger('userId');
             $table->integer(column: 'currentTurn')->default(0);
