@@ -34,15 +34,13 @@ class GameController extends Controller
                 $endTime = Carbon::parse($tournament->nextRoundTime)->addMinutes(10)->toDateTimeString();
             }
             $tournamentParticipant = TournamentParticipant::where('userId', $request->user()->id)->where('tournamentId', $tournamentId)->first();
-           if(!Carbon::now()->isAfter($tournament->currentRound == 1?$tournament->startTime:$tournament->nextRoundTime))
-            {
+            if (!Carbon::now()->isAfter($tournament->currentRound == 1 ? $tournament->startTime : $tournament->nextRoundTime)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Tournament not started yet',
                 ]);
             }
-            if(!$tournamentParticipant)
-            {
+            if (!$tournamentParticipant) {
                 return response()->json([
                     'status' => false,
                     'message' => 'You are not  join this Tournament',
@@ -217,7 +215,6 @@ class GameController extends Controller
         $nextTurn = RoomDetails::where('roomId', $this->roomId)->count() == $event->playerId + 1 ? 0 : $event->playerId + 1;
 
 
-
         //to check if the token is returned to the home
         $CheckAnyTokenReturned = BoardEvent::where('position', $event->position)->where('roomId', $this->roomId)->whereNot('playerId', $event->playerId)->where('isSafe', '0')->first();
 
@@ -292,12 +289,12 @@ class GameController extends Controller
             // 'roomId' => 'required',
             'playerId' => 'required|in:0,1,2,3',
         ]);
-       
+
         $diceValue = rand(1, 6);
-        //for sudipto
-        if($request->user()->id == 480)
-        $diceValue = rand(5, 6);
-    //for sudipto
+        // //for sudipto
+        // if ($request->user()->id == 480)
+        //     $diceValue = rand(5, 6);
+        // //for sudipto
         $checkUserJoined = RoomDetails::where('userId', $request->user()->id)->where('roomType', 'tournament')->first();
         $this->roomId = $checkUserJoined->roomId;
         $diceModel = DiceRolling::where('roomId', $this->roomId)->where('userId', $request->user()->id)->first();
