@@ -35,6 +35,13 @@ class TournamentManager extends Controller
         $request->validate([
             'tournament_id' => 'required|exists:tournaments,id',
         ]);
+        if($request->tournament_id == 8)
+        {
+            return response()->json([
+                'status' => false,
+                'message' => 'Entry to this tournament is Closed',
+            ]);
+        }
         $checkIfAlreadyJoined = TournamentParticipant::where('userId', $request->user()->id)
             ->where('tournamentId', $request->tournament_id)
             ->first();
