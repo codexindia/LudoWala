@@ -35,7 +35,7 @@ class TournamentManager extends Controller
         $request->validate([
             'tournament_id' => 'required|exists:tournaments,id',
         ]);
-        if($request->tournament_id == 8)
+        if($request->tournament_id == 1)
         {
             return response()->json([
                 'status' => false,
